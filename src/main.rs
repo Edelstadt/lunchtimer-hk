@@ -22,7 +22,7 @@ async fn main() {
     // Server
     let mut server = Nickel::new();
     server.get("**", lunch);
-    server.listen("127.0.0.1:8000").expect("");
+    server.listen("0.0.0.0:8000").expect("");
 
 
 
