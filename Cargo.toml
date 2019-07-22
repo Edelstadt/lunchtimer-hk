@@ -9,3 +9,5 @@ runtime = "0.3.0-alpha.6"
 #reqwest = "0.9.19"
 futures-preview = { version = "=0.3.0-alpha.16", features = ["async-await", "nightly"] }
 nickel = "0.11.0"
+serde_derive = "1.0.97"
+serde = "1.0.97"
