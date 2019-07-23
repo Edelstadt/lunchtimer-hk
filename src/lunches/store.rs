@@ -1,11 +1,8 @@
-use std::sync::Mutex;
-use core::borrow::Borrow;
-
 #[derive(Serialize)]
 pub struct Menu {
-    pub id: u8, // TODO private
+    pub id:    u8, // TODO private
     pub title: String,
-    pub body: String,
+    pub body:  String,
 }
 
 static mut MENUS: Option<Vec<Menu>> = None; // TODO Mutex
