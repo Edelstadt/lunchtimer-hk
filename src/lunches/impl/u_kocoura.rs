@@ -1,8 +1,8 @@
 use std::sync::mpsc::{Sender};
-use crate::Menu;
+use crate::lunches::store::Menu;
 
 pub async fn fetch(tx: Sender<Menu>) {
     tx.send(
-        Menu{id: 3, title: String::from("RestaurantC"), body: String::from("Menu of C ...")}
+        Menu{id: 3, title: String::from("U Kocoura"), body: String::from("Menu of kitty ...")}
     );
 }
