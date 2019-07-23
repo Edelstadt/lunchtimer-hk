@@ -5,13 +5,12 @@ extern crate serde_derive;
 #[macro_use]
 extern crate nickel;
 
-use crate::lunches::store::{get_menus, init_menus, update_menus};
+use crate::lunches::store::{get_menus, update_menus};
 use nickel::{HttpRouter, Nickel};
 use std::collections::HashMap;
 
 #[runtime::main]
 async fn main() {
-    init_menus();
     let mut server = Nickel::new();
     runtime::spawn(update_menus());
 

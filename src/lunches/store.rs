@@ -39,7 +39,9 @@ pub fn init_menus() {
 }
 
 pub async fn update_menus() {
+    init_menus();
     let mut last_hour: u32 = 99;
+
     loop {
         // Updates once an hour
         let curr = Local::now();
