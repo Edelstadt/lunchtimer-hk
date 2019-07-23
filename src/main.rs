@@ -5,13 +5,15 @@ extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 
-use lunches::fetch;
+use lunches::{fetch, r#impl as menus};
 use std::sync::mpsc::{channel};
 use nickel::{Nickel, HttpRouter, Request, Response, MiddlewareResult};
 use std::collections::HashMap;
+use std::thread;
+use std::time::Duration;
 
 #[derive(Serialize)]
-struct Menu {
+pub struct Menu {
     id: u8,
     title: String,
     body: String,
@@ -19,24 +21,14 @@ struct Menu {
 
 #[runtime::main]
 async fn main() {
-    // Server
     let mut server = Nickel::new();
     server.get("**", lunch);
+
+    let mut data: Vec<Menu> = Vec::new();
+    let p_data = &data;
+    runtime::spawn(update_menus(data));
+
     server.listen("0.0.0.0:8000").expect("");
-
-
-
-    // Example of async
-    let (tx, rx) = channel();
-
-    let c = 10;
-    for i in 0..c { // Spawn jobs
-        runtime::spawn(fetch(tx.clone()));
-    }
-
-    for i in 0..11 { // Await jobs
-        dbg!(rx.recv());
-    }
 }
 
 fn lunch<'mw>(_req: &mut Request, res: Response<'mw>) -> MiddlewareResult<'mw> {
@@ -50,5 +42,26 @@ fn lunch<'mw>(_req: &mut Request, res: Response<'mw>) -> MiddlewareResult<'mw> {
     let mut data = HashMap::new();
     data.insert("menus", menus);
 
-    return res.render("src/assets/lunches.tpl", &data)
+    return res.render("assets/lunches.tpl", &data)
+}
+
+async fn update_menus(mut data: Vec<Menu>) {
+    loop {
+        // TODO
+        let (tx, rx) = channel();
+        let mut list: Vec<Menu> = Vec::new();
+
+        let c = 2; // Spawn jobs
+        runtime::spawn(menus::fascila(tx.clone()));
+        runtime::spawn(menus::u_kocoura(tx.clone()));
+
+        let mut tmp_data: Vec<Menu> = vec![];
+        for _ in 0..c { // Await jobs
+            tmp_data.push(rx.recv().unwrap());
+        }
+        data.clear();
+        data.append(&mut tmp_data);
+
+        thread::sleep(Duration::from_secs(3600)); // TODO proper timer
+    }
 }
