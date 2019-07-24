@@ -30,10 +30,16 @@ pub fn kocour_denni_parser(body: &mut String) -> String {
     let mut r = String::new();
     for node in doc.find(Class("cms-content")) {
         for tr in node.find(Name("tr")) {
-            for (_, element) in tr.text().split_whitespace().enumerate() {
-                r += format!(" {}", element).as_str()
+            let line = tr.text().trim().to_string();
+            if !line.ends_with("Kč") {
+                r += format!("<h3><span>{}</span></h3>", line).as_str();
+            } else {
+                // TODO předělat
+                let mut c = line.chars().rev().skip(3).collect::<String>().find(" ").unwrap();
+                c = line.len() - c;
+
+                r += format!("<p>{}&nbsp&nbsp&nbsp...<strong>{}</strong></p>", line[..c].to_string(), line[c..].to_string()).as_str();
             }
-            r += "<br />";
         }
     }
 

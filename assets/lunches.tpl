@@ -36,6 +36,38 @@ body, html {
   height: 100%;
 }
 
+.container {
+  width: 50%;
+  margin: 1em auto;
+  border: 1px solid #ddd;
+  padding: 15px;
+}
+
+h3 {
+  position: relative;
+  font-weight: 700;
+  margin: .7em 0 1em 0;
+  font-size: 1.25em;
+  span {
+    float: left;
+    width: 10%;
+    text-align: center;
+    display: block;
+    &:first-child {
+      width: 40%;
+      text-align: left;
+    }
+  }
+}
+
+p {
+    padding-left: 30px;
+    font-size: 1.1em;
+    //color: #777;
+    margin-bottom: 1.5em;
+    font-style: italic;
+}
+
 </style>
 </head>
 <body>
@@ -46,9 +78,11 @@ body, html {
 {{/menus}}
 
 {{#menus}}
-    <div id={{id}} class="tabcontent">
-      <p>{{{body}}}</p>
+<div id={{id}} class="tabcontent">
+    <div class="container">
+      {{{body}}}
     </div>
+</div>
 {{/menus}}
 
 <script>
@@ -68,6 +102,8 @@ function openPage(pageName,elmnt,color) {
 
 // Get the element with id="defaultOpen" and click on it
 document.getElementById("defaultOpen").click();
+
+$('h3 span:first-child').after("<span class=\"dots\"> </span>");
 </script>
 
 </body>
