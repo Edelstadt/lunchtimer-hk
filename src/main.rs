@@ -23,5 +23,5 @@ async fn main() {
         },
     );
 
-    server.listen("0.0.0.0:8000").expect("");
+    server.listen("127.0.0.7:8000").expect("");
 }

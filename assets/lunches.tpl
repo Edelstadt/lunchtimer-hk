@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
 <style>
 * {box-sizing: border-box}
 
@@ -47,8 +47,7 @@ body, html {
 
 {{#menus}}
     <div id={{id}} class="tabcontent">
-      <h3>{{body}}</h3>
-      <p>content...</p>
+      <p>{{{body}}}</p>
     </div>
 {{/menus}}
 

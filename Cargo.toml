@@ -6,9 +6,14 @@ edition = "2018"
 
 [dependencies]
 runtime = "0.3.0-alpha.6"
-#reqwest = "0.9.19"
 futures-preview = { version = "=0.3.0-alpha.16", features = ["async-await", "nightly"] }
 nickel = "0.11.0"
 serde_derive = "1.0.97"
 serde = "1.0.97"
 chrono = "0.4.7"
+
+#scraper = "0.10.1" # TODO ??
+# TODO vyhodit - závislot na Tokio, Hyper a hafo dalšího bordelu
+reqwest = "0.9.19"
+select = "0.4.3"
+
