@@ -1,13 +1,17 @@
 use crate::lunches::store::Menu;
-use std::sync::mpsc::Sender;
 use reqwest::Client;
-use std::io::Read;
-use select::document::Document;
-use select::predicate::{Attr, Class, Name, Predicate};
+use select::{
+    document::Document,
+    predicate::{Attr, Class, Name, Predicate},
+};
+use std::{io::Read, sync::mpsc::Sender};
 
 pub async fn fetch(tx: Sender<Menu>) {
     let c = Client::new();
-    let mut res = c.get("https://www.ukocourahk.cz/denni-menu/").send().unwrap();
+    let mut res = c
+        .get("https://www.ukocourahk.cz/denni-menu/")
+        .send()
+        .unwrap();
 
     let mut body = String::new();
     res.read_to_string(&mut body);
