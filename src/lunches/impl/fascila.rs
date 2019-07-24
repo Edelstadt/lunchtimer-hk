@@ -38,11 +38,24 @@ pub fn fascila_parser(body: &mut String) -> String {
         });
 
         if gg != 0 && index == gg {
-            for node_i in node.find(Class("vc_row")) {
-                for (_, element) in node_i.text().split_whitespace().enumerate() {
-                    r += format!(" {}", element).as_str()
+            for (i, node_i) in node.find(Class("vc_row")).enumerate() {
+//                for (_, element) in node_i.text().split_whitespace().enumerate() {
+//                    r += format!(" {}", element).as_str()
+//                }
+//                r += "<br />";
+                let line = node_i.text().trim().to_string();
+
+                match i {
+                    0 => { r += format!("<h3><span>Polévka</span></h3>").as_str(); },
+                    1 => { r += format!("<h3><span>Hlavní jídla</span></h3>").as_str(); },
+                    _ => {},
                 }
-                r += "<br />";
+
+                // TODO předělat
+                let mut c = line.chars().rev().collect::<String>().find(" ").unwrap();
+                c = line.len() - c;
+
+                r += format!("<p>{}&nbsp&nbsp&nbsp...<strong>{}</strong></p>", line[..c].to_string(), line[c..].to_string()).as_str();
             }
         }
     }
