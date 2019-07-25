@@ -20,7 +20,7 @@ pub fn get_menus() -> &'static [Menu] {
     }
 }
 
-pub fn set_menus(mut data: Vec<Menu>) {
+fn set_menus(mut data: Vec<Menu>) {
     unsafe {
         match MENUS {
             Some(ref mut x) => {
@@ -32,7 +32,7 @@ pub fn set_menus(mut data: Vec<Menu>) {
     }
 }
 
-pub fn init_menus() {
+fn init_menus() {
     unsafe {
         MENUS = Some(vec![]);
     }

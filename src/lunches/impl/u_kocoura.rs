@@ -24,7 +24,7 @@ pub async fn fetch(tx: Sender<Menu>) {
     .unwrap();
 }
 
-pub fn kocour_denni_parser(body: &mut String) -> String {
+fn kocour_denni_parser(body: &mut String) -> String {
     let mut doc = Document::from_read(body.as_bytes()).unwrap();
 
     let mut r = String::new();

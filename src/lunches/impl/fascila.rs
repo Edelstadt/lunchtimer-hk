@@ -24,7 +24,7 @@ pub async fn fetch(tx: Sender<Menu>) {
     .unwrap();
 }
 
-pub fn fascila_parser(body: &mut String) -> String {
+fn fascila_parser(body: &mut String) -> String {
     let mut doc = Document::from_read(body.as_bytes()).unwrap();
     let mut gg: usize = 0;
     let mut r = String::new();
@@ -39,10 +39,6 @@ pub fn fascila_parser(body: &mut String) -> String {
 
         if gg != 0 && index == gg {
             for (i, node_i) in node.find(Class("vc_row")).enumerate() {
-//                for (_, element) in node_i.text().split_whitespace().enumerate() {
-//                    r += format!(" {}", element).as_str()
-//                }
-//                r += "<br />";
                 let line = node_i.text().trim().to_string();
 
                 match i {
