@@ -1,17 +1,19 @@
-use crate::lunches::store::Menu;
+use std::{io::Read, sync::mpsc::Sender};
+
 use reqwest::Client;
 use select::{
     document::Document,
     predicate::{Attr, Class, Name, Predicate},
 };
-use std::{io::Read, sync::mpsc::Sender};
+
+use crate::lunches::store::Menu;
 
 pub async fn fetch(tx: Sender<Menu>) {
     let c = Client::new();
     let mut res = c
         .get("https://www.ukocourahk.cz/denni-menu/")
         .send()
-        .unwrap();
+        .expect("U kocoura - request fail");
 
     let mut body = String::new();
     res.read_to_string(&mut body);
@@ -21,11 +23,11 @@ pub async fn fetch(tx: Sender<Menu>) {
         title: String::from("U Kocoura"),
         body:  format!("{}", kocour_denni_parser(&mut body)),
     })
-    .unwrap();
+        .expect("Kocour - Not send");
 }
 
 fn kocour_denni_parser(body: &mut String) -> String {
-    let mut doc = Document::from_read(body.as_bytes()).unwrap();
+    let mut doc = Document::from_read(body.as_bytes()).expect("Kocour - read body failed");
 
     let mut r = String::new();
     for node in doc.find(Class("cms-content")) {

@@ -1,18 +1,20 @@
-use crate::lunches::store::Menu;
+use std::{io::Read, sync::mpsc::Sender};
+
 use chrono::{Datelike, Utc};
 use reqwest::Client;
 use select::{
     document::Document,
     predicate::{Attr, Class, Name, Predicate},
 };
-use std::{io::Read, sync::mpsc::Sender};
+
+use crate::lunches::store::Menu;
 
 pub async fn fetch(tx: Sender<Menu>) {
     let c = Client::new();
     let mut res = c
         .get("http://www.restauracefascila.cz/denni-menu/")
         .send()
-        .unwrap();
+        .expect("Fascila - request fail");
 
     let mut body = String::new();
     res.read_to_string(&mut body);
@@ -21,11 +23,11 @@ pub async fn fetch(tx: Sender<Menu>) {
         title: String::from("Fascila"),
         body:  format!("{}", fascila_parser(&mut body)),
     })
-    .unwrap();
+        .expect("Fascila - Not send");
 }
 
 fn fascila_parser(body: &mut String) -> String {
-    let mut doc = Document::from_read(body.as_bytes()).unwrap();
+    let mut doc = Document::from_read(body.as_bytes()).expect("Fascila - read body failed");
     let mut gg: usize = 0;
     let mut r = String::new();
     for (index, node) in doc.find(Class("wpb_wrapper")).enumerate() {

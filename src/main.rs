@@ -1,13 +1,16 @@
 #![feature(async_await)]
-mod lunches;
-#[macro_use]
-extern crate serde_derive;
 #[macro_use]
 extern crate nickel;
+#[macro_use]
+extern crate serde_derive;
+
+use std::collections::HashMap;
+
+use nickel::{HttpRouter, Nickel};
 
 use crate::lunches::store::{get_menus, update_menus};
-use nickel::{HttpRouter, Nickel};
-use std::collections::HashMap;
+
+mod lunches;
 
 #[runtime::main]
 async fn main() {
@@ -23,5 +26,5 @@ async fn main() {
         },
     );
 
-    server.listen("127.0.0.7:8000").expect("");
+    server.listen("0.0.0.0:8000").expect("Server fail");
 }

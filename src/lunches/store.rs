@@ -1,6 +1,8 @@
-use crate::lunches::r#impl as menus;
-use chrono::{Local, Timelike};
 use std::{sync::mpsc::channel, thread, time::Duration};
+
+use chrono::{Local, Timelike};
+
+use crate::lunches::r#impl as menus;
 
 #[derive(Serialize)]
 pub struct Menu {
@@ -54,13 +56,14 @@ pub async fn update_menus() {
         // Fetch new data
         let (tx, rx) = channel();
 
-        let c = 2;
+        let c = 3;
         runtime::spawn(menus::fascila(tx.clone()));
         runtime::spawn(menus::u_kocoura(tx.clone()));
+        runtime::spawn(menus::beranek(tx.clone()));
 
         let mut data: Vec<Menu> = vec![];
         for _ in 0..c {
-            data.push(rx.recv().unwrap());
+            data.push(rx.recv().expect("Data push to channel fail"));
         }
         set_menus(data);
     }
