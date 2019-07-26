@@ -14,8 +14,12 @@ mod lunches;
 
 #[runtime::main]
 async fn main() {
-    let mut server = Nickel::new();
     runtime::spawn(update_menus());
+    asd().await;
+}
+
+async fn asd() {
+    let mut server = Nickel::new();
 
     server.get(
         "**",
