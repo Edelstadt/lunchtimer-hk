@@ -14,7 +14,7 @@ mod lunches;
 
 #[runtime::main]
 async fn main() {
-    runtime::spawn(update_menus());
+    //runtime::spawn(update_menus());
     asd().await;
 }
 
@@ -24,6 +24,7 @@ async fn asd() {
     server.get(
         "**",
         middleware! { |_, response|
+            update_menus()
             let mut data2 = HashMap::new();
             data2.insert("menus", get_menus());
             return response.render("assets/lunches.tpl", &data2)
