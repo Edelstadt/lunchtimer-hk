@@ -12,7 +12,6 @@ body, html {
   font-family: Arial;
 }
 
-/* Style tab links */
 .tablink {
   background-color: #555;
   color: white;
@@ -32,15 +31,28 @@ body, html {
 /* Style the tab content (and add height:100% for full page content) */
 .tabcontent {
   display: none;
-  padding: 100px 20px;
+  padding: 0px 20px;
   height: 100%;
 }
 
 .container {
-  width: 50%;
+  max-width: 1000px;
   margin: 1em auto;
   border: 1px solid #ddd;
   padding: 15px;
+}
+
+.panel {
+  display: block;
+  height: 48px;
+}
+
+.date {
+    position: relative;
+    display: block;
+    align-items: center;
+    margin: 20px auto;
+    text-align: center;
 }
 
 h3 {
@@ -73,9 +85,17 @@ p {
 <body>
 
 
-{{#menus}}
-    <button class="tablink" onclick=";openPage({{id}}, this)">{{title}}</button>
-{{/menus}}
+<div class="panel">
+    {{#menus}}
+        <button class="tablink" onclick=";openPage({{id}}, this)">{{title}}</button>
+    {{/menus}}
+</div>
+
+<div class="date">
+    <h2>
+        {{date}}
+    </h2>
+</div>
 
 {{#menus}}
 <div id={{id}} class="tabcontent">
