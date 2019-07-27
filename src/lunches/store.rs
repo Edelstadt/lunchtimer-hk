@@ -34,7 +34,7 @@ fn set_menus(mut data: Vec<Menu>) {
     }
 }
 
-fn init_menus() {
+pub fn init_menus() {
     unsafe {
         MENUS = Some(vec![]);
     }

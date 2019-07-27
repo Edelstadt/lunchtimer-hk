@@ -2,10 +2,7 @@ use std::{io::Read, sync::mpsc::Sender};
 
 use chrono::{Datelike, Utc};
 use reqwest::Client;
-use select::{
-    document::Document,
-    predicate::{Attr, Class, Name, Predicate},
-};
+use select::{document::Document, predicate::Class};
 
 use regex::Regex;
 
@@ -19,18 +16,19 @@ pub async fn fetch(tx: Sender<Menu>) {
         .expect("Beranek - request fail");
 
     let mut body = String::new();
-    res.read_to_string(&mut body);
+    res.read_to_string(&mut body)
+        .expect("Beranek - failed read body");
 
     tx.send(Menu {
-        id: 4,
+        id:    4,
         title: String::from("Beranek"),
-        body: format!("{}", beranek_parser(&mut body)),
+        body:  format!("{}", beranek_parser(&mut body)),
     })
-        .expect("Beranek - Not send");
+    .expect("Beranek - Not send");
 }
 
 fn beranek_parser(body: &mut String) -> String {
-    let mut doc = Document::from_read(body.as_bytes()).expect("Beranek - read body failed");
+    let doc = Document::from_read(body.as_bytes()).expect("Beranek - read body failed");
 
     let mut r = String::new();
     for node in doc.find(Class("nabidkatext")) {

@@ -4,7 +4,7 @@ use chrono::{Datelike, Utc};
 use reqwest::Client;
 use select::{
     document::Document,
-    predicate::{Attr, Class, Name, Predicate},
+    predicate::{Class, Name},
 };
 
 use crate::lunches::store::Menu;
@@ -17,17 +17,19 @@ pub async fn fetch(tx: Sender<Menu>) {
         .expect("Fascila - request fail");
 
     let mut body = String::new();
-    res.read_to_string(&mut body);
+    res.read_to_string(&mut body)
+        .expect("Fascila - failed read body");
+
     tx.send(Menu {
         id:    1,
         title: String::from("Fascila"),
         body:  format!("{}", fascila_parser(&mut body)),
     })
-        .expect("Fascila - Not send");
+    .expect("Fascila - Not send");
 }
 
 fn fascila_parser(body: &mut String) -> String {
-    let mut doc = Document::from_read(body.as_bytes()).expect("Fascila - read body failed");
+    let doc = Document::from_read(body.as_bytes()).expect("Fascila - read body failed");
     let mut gg: usize = 0;
     let mut r = String::new();
     for (index, node) in doc.find(Class("wpb_wrapper")).enumerate() {
@@ -44,8 +46,12 @@ fn fascila_parser(body: &mut String) -> String {
                 let line = node_i.text().trim().to_string();
 
                 match i {
-                    0 => { r += format!("<h3><span>Polévka</span></h3>").as_str(); },
-                    1 => { r += format!("<h3><span>Hlavní jídla</span></h3>").as_str(); },
+                    0 => {
+                        r += format!("<h3><span>Polévka</span></h3>").as_str();
+                    },
+                    1 => {
+                        r += format!("<h3><span>Hlavní jídla</span></h3>").as_str();
+                    },
                     _ => {},
                 }
 
@@ -53,7 +59,12 @@ fn fascila_parser(body: &mut String) -> String {
                 let mut c = line.chars().rev().collect::<String>().find(" ").unwrap();
                 c = line.len() - c;
 
-                r += format!("<p>{}&nbsp&nbsp&nbsp...<strong>{}</strong></p>", line[..c].to_string(), line[c..].to_string()).as_str();
+                r += format!(
+                    "<p>{}&nbsp&nbsp&nbsp...<strong>{}</strong></p>",
+                    line[..c].to_string(),
+                    line[c..].to_string()
+                )
+                .as_str();
             }
         }
     }

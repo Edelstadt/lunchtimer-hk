@@ -3,7 +3,7 @@ use std::{io::Read, sync::mpsc::Sender};
 use reqwest::Client;
 use select::{
     document::Document,
-    predicate::{Attr, Class, Name, Predicate},
+    predicate::{Class, Name},
 };
 
 use crate::lunches::store::Menu;
@@ -16,18 +16,19 @@ pub async fn fetch(tx: Sender<Menu>) {
         .expect("U kocoura - request fail");
 
     let mut body = String::new();
-    res.read_to_string(&mut body);
+    res.read_to_string(&mut body)
+        .expect("Kocour - failed read body");
 
     tx.send(Menu {
         id:    3,
         title: String::from("U Kocoura"),
         body:  format!("{}", kocour_denni_parser(&mut body)),
     })
-        .expect("Kocour - Not send");
+    .expect("Kocour - Not send");
 }
 
 fn kocour_denni_parser(body: &mut String) -> String {
-    let mut doc = Document::from_read(body.as_bytes()).expect("Kocour - read body failed");
+    let doc = Document::from_read(body.as_bytes()).expect("Kocour - read body failed");
 
     let mut r = String::new();
     for node in doc.find(Class("cms-content")) {
@@ -37,10 +38,21 @@ fn kocour_denni_parser(body: &mut String) -> String {
                 r += format!("<h3><span>{}</span></h3>", line).as_str();
             } else {
                 // TODO předělat
-                let mut c = line.chars().rev().skip(3).collect::<String>().find(" ").unwrap();
+                let mut c = line
+                    .chars()
+                    .rev()
+                    .skip(3)
+                    .collect::<String>()
+                    .find(" ")
+                    .unwrap();
                 c = line.len() - c;
 
-                r += format!("<p>{}&nbsp&nbsp&nbsp...<strong>{}</strong></p>", line[..c].to_string(), line[c..].to_string()).as_str();
+                r += format!(
+                    "<p>{}&nbsp&nbsp&nbsp...<strong>{}</strong></p>",
+                    line[..c].to_string(),
+                    line[c..].to_string()
+                )
+                .as_str();
             }
         }
     }
