@@ -3,6 +3,7 @@ use std::{sync::mpsc::channel, thread, time::Duration};
 use chrono::{Local, Timelike};
 
 use crate::lunches::r#impl as menus;
+use futures::StreamExt;
 
 #[derive(Serialize)]
 pub struct Menu {
@@ -53,17 +54,18 @@ pub async fn update_menus() {
         }
         last_hour = curr.hour();
 
-        // Fetch new data
         let (tx, rx) = channel();
 
-        let c = 3;
-        runtime::spawn(menus::fascila(tx.clone()));
-        runtime::spawn(menus::u_kocoura(tx.clone()));
-        runtime::spawn(menus::beranek(tx.clone()));
+        let c = 3_u8; // Nelze přes Trait -> nepodporují async fn
+        let f1 = (menus::fascila(tx.clone()));
+        let f2 = (menus::u_kocoura(tx.clone()));
+        let f3 = (menus::beranek(tx.clone()));
+
+        futures::join!(f1, f2, f3);
 
         let mut data: Vec<Menu> = vec![];
         for _ in 0..c {
-            data.push(rx.recv().expect("Data push to channel fail"));
+            data.push(rx.iter().next().expect("Data push to channel fail"));
         }
         set_menus(data);
     }
