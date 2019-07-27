@@ -1,10 +1,42 @@
 extern crate rusqlite;
 
-use rusqlite::{Connection, NO_PARAMS};
+use rusqlite::{Connection, Error, Statement, NO_PARAMS};
 
 pub struct SQLite {
-    databases:  String,
-    connection: Connection,
+    databases:      String,
+    pub connection: Connection,
+}
+
+pub struct SQLiteContext<'a> {
+    pub conn:                  &'a Connection,
+    pub create_menu_statement: Option<Statement<'a>>,
+}
+impl<'a> SQLiteContext<'a> {
+    pub fn new(conn: &'a Connection) -> Self {
+        return SQLiteContext {
+            conn,
+            create_menu_statement: None,
+        };
+    }
+
+    pub fn create_menu(&mut self, title: &String, body: &String, id: u8) -> Result<i64, Error> {
+        if let None = &self.create_menu_statement {
+            //            INSERT OR REPLACE INTO cat_colors (id, title, body) VALUES (:id, :title, :body)
+            let stmt = self.conn.prepare(
+                "INSERT OR REPLACE INTO cat_colors (id, title, body) VALUES (:id, :title, :body)",
+            )?;
+            self.create_menu_statement = Some(stmt);
+        };
+        self.create_menu_statement
+            .as_mut()
+            .unwrap()
+            .execute_named(&[
+                (":id", &id.to_string()),
+                (":title", &title),
+                (":body", &body),
+            ])?;
+        return Ok(self.conn.last_insert_rowid());
+    }
 }
 
 impl SQLite {
