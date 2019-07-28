@@ -21,18 +21,18 @@ async fn main() {
 
 async fn server() {
     let mut server = Nickel::new();
-    let date = Utc::now();
-    let formatted_date = format!(
-        "{}: {}.{}.",
-        translate_weekday(date.weekday()),
-        date.day(),
-        date.month()
-    );
 
     server.get(
         "**",
         middleware! {|_, response|
             let mut data: HashMap<&str, TemplateValues> = HashMap::new();
+            let date = Utc::now();
+            let formatted_date = format!(
+                "{}: {}.{}.",
+                translate_weekday(date.weekday()),
+                date.day(),
+                date.month()
+            );
 
             data.insert("menus", TemplateValues::Menus(get_menus()));
             data.insert("date", TemplateValues::Str(&formatted_date));

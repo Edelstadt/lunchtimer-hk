@@ -56,12 +56,13 @@ pub async fn update_menus() {
 
         let (tx, rx) = channel();
 
-        let c = 3_u8; // Nelze přes Trait -> nepodporují async fn
+        let c = 4_u8; // Nelze přes Trait -> nepodporují async fn
         let f1 = (menus::fascila(tx.clone()));
         let f2 = (menus::u_kocoura(tx.clone()));
         let f3 = (menus::beranek(tx.clone()));
+        let f4 = (menus::sova(tx.clone()));
 
-        futures::join!(f1, f2, f3);
+        futures::join!(f1, f2, f3, f4);
 
         let mut data: Vec<Menu> = vec![];
         for _ in 0..c {
