@@ -1,6 +1,6 @@
 extern crate rusqlite;
 
-use rusqlite::{Connection, Error, Statement, NO_PARAMS};
+use rusqlite::{Connection, Error, OpenFlags, Statement, NO_PARAMS};
 
 pub struct SQLite {
     databases:      String,
@@ -21,10 +21,9 @@ impl<'a> SQLiteContext<'a> {
 
     pub fn create_menu(&mut self, title: &String, body: &String, id: u8) -> Result<i64, Error> {
         if let None = &self.create_menu_statement {
-            //            INSERT OR REPLACE INTO cat_colors (id, title, body) VALUES (:id, :title, :body)
             let stmt = self.conn.prepare(
                 "INSERT OR REPLACE INTO cat_colors (id, title, body) VALUES (:id, :title, :body)",
-            )?;
+            ).expect("Failed to prepare context");
             self.create_menu_statement = Some(stmt);
         };
         self.create_menu_statement
@@ -34,7 +33,8 @@ impl<'a> SQLiteContext<'a> {
                 (":id", &id.to_string()),
                 (":title", &title),
                 (":body", &body),
-            ])?;
+            ])
+            .expect("Failed create menu statement");
         return Ok(self.conn.last_insert_rowid());
     }
 }
@@ -42,8 +42,15 @@ impl<'a> SQLiteContext<'a> {
 impl SQLite {
     pub fn new(db_name: &str) -> SQLite {
         SQLite {
-            databases:  db_name.to_string(),
-            connection: Connection::open(db_name).expect("Not open"),
+            databases: db_name.to_string(),
+            //            connection: Connection::open(db_name).expect("Not open"),
+            connection: Connection::open_with_flags(
+                db_name,
+                OpenFlags::SQLITE_OPEN_READ_WRITE
+                    | OpenFlags::SQLITE_OPEN_CREATE
+                    | OpenFlags::SQLITE_OPEN_SHARED_CACHE,
+            )
+            .expect("Not open"),
         }
     }
 }
