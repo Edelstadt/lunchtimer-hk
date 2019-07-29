@@ -57,7 +57,7 @@ pub async fn update_menus() {
         let (tx, rx) = channel::<Result<Menu, StoreError>>();
 //        let (tx, rx) = channel();
 
-        let c = 2_u8; // Nelze přes Trait -> nepodporují async fn
+        let c = 1_u8; // Nelze přes Trait -> nepodporují async fn
 //        let f1 = (menus::fascila(tx.clone()));
         let f2 = (menus::u_kocoura(tx.clone()));
 //        let f3 = (menus::beranek(tx.clone()));
