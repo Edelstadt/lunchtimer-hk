@@ -12,6 +12,22 @@ pub struct Menu {
     pub body:  String,
 }
 
+pub struct NewMenu {
+    pub title: String,
+    pub body: Vec<MenuBody>,
+}
+
+pub struct MenuLine {
+    pub amount: String,
+    pub label: String,
+    pub price: usize,
+}
+
+pub enum MenuBody{
+    Title(String),
+    Line(MenuLine),
+}
+
 static mut MENUS: Option<Vec<Menu>> = None; // TODO Mutex
 
 pub fn get_menus() -> &'static [Menu] {
