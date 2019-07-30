@@ -3,7 +3,7 @@ use std::{sync::mpsc::channel, thread, time::Duration};
 use chrono::{Local, Timelike};
 
 use crate::lunches::{menu::Menu, r#impl as menus};
-use std::error::Error;
+use reqwest::Error;
 
 static mut MENUS: Option<Vec<Menu>> = None; // TODO Mutex
 
@@ -76,4 +76,16 @@ pub async fn update_menus() {
 pub enum StoreError {
     Fetch(&'static str),
     Parse(&'static str),
+}
+
+impl std::convert::From<reqwest::Error> for StoreError {
+    fn from(_: reqwest::Error) -> Self {
+        StoreError::Fetch("Request fetch")
+    }
+}
+
+impl std::convert::From<std::io::Error> for StoreError {
+    fn from(_: std::io::Error) -> Self {
+        StoreError::Parse("Read data")
+    }
 }

@@ -4,12 +4,14 @@ pub struct Menu {
     pub body:  Vec<MenuLine>,
 }
 
+#[derive(Serialize)]
 pub struct MenuBody {
     pub amount: String,
     pub label:  String,
     pub price:  usize,
 }
 
+#[derive(Serialize)]
 pub enum MenuLine {
     Title(String),
     Item(MenuBody),
@@ -25,10 +27,10 @@ impl Menu {
 }
 
 impl MenuBody {
-    pub fn new(amount: &str, label: &str, price: usize) -> Self {
+    pub fn new(amount: String, label: String, price: usize) -> Self {
         MenuBody {
-            amount: amount.to_string(),
-            label: label.to_string(),
+            amount,
+            label,
             price,
         }
     }

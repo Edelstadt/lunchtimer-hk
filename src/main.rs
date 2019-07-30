@@ -8,8 +8,9 @@ use std::collections::HashMap;
 
 use nickel::{HttpRouter, Nickel};
 
-use crate::lunches::store::{get_menus, update_menus, Menu};
+use crate::lunches::store::{get_menus, update_menus};
 use chrono::{Datelike, Utc, Weekday};
+use crate::lunches::menu::Menu;
 
 mod lunches;
 

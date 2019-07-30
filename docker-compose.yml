@@ -4,4 +4,4 @@ services:
     app:
         image: lunchtimer-hk
         volumes:
-            - ./built/:/usr/src/lunchtimer-hk/target/release/
+            - ./:/usr/src/lunchtimer-hk/
