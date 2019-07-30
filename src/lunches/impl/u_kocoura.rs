@@ -20,8 +20,7 @@ pub fn fetch_data() -> Result<Menu, StoreError> {
         .send()?;
 
     let mut body = String::new();
-    res.read_to_string(&mut body)
-        .or(Err(StoreError::Fetch("Kocour: failed to read fetched menu")))?;
+    res.read_to_string(&mut body)?;
 
     let mut menu = Menu::new("U kocoura");
     kocour_denni_parser(&mut menu, body)?;
@@ -37,29 +36,30 @@ fn kocour_denni_parser(menu: &mut Menu, body: String) -> Result<(), StoreError> 
             let line = tr.text().trim().to_string();
             if !line.ends_with("Kč") {
                 menu.body.push(
-                    MenuLine::Title(format!("<h3><span>{}</span></h3>", line))
+                    MenuLine::Title(line)
                 );
             } else {
+                let mut am = line.find('\t')?;
+
                 let mut c = line
                     .chars()
                     .rev()
-                    .skip(3)
                     .collect::<String>()
-                    .find(" ")
-                    .ok_or(StoreError::Parse("Kocour: parse price"))?;
-                c = line.len() - c;
+                    .find("\t")?;
 
-//                format!(
-//                    "<p>{}&nbsp&nbsp&nbsp...<strong>{}</strong></p>",
-//                    line.chars().take(c).collect::<String>(),
-//                    line.chars().skip(c).collect::<String>()
-//                );
+                c = line.chars().count() - c;
+
+                // TODO lepší ohlídání by bolo fajn (pokud chybí množství, např. u salátu)
+                if am > c {
+                    am = 0;
+                }
+
                 menu.body.push(
                     MenuLine::Item(
                         MenuBody{
-                            amount: String::new(),
-                            label: line.chars().take(c).collect::<String>(),
-                            price: 0,
+                            amount: line.chars().take(am).collect::<String>(),
+                            label: line.chars().skip(am).take(c - am).collect::<String>(),
+                            price: line.chars().skip(c + 1).collect::<String>().split(' ').next()?.parse::<usize>()?,
                         }
                     )
                 );

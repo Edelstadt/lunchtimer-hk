@@ -4,10 +4,11 @@ use chrono::{Local, Timelike};
 
 use crate::lunches::{menu::Menu, r#impl as menus};
 use reqwest::Error;
+use crate::lunches::menu::{MenuLine, HtmlMenu};
 
-static mut MENUS: Option<Vec<Menu>> = None; // TODO Mutex
+static mut MENUS: Option<Vec<HtmlMenu>> = None; // TODO Mutex
 
-pub fn get_menus() -> &'static [Menu] {
+pub fn get_menus() -> &'static [HtmlMenu] {
     unsafe {
         match MENUS {
             Some(ref x) => x,
@@ -16,7 +17,7 @@ pub fn get_menus() -> &'static [Menu] {
     }
 }
 
-fn set_menus(mut data: Vec<Menu>) {
+fn set_menus(mut data: Vec<HtmlMenu>) {
     unsafe {
         match MENUS {
             Some(ref mut x) => {
@@ -50,7 +51,7 @@ pub async fn update_menus() {
         let (tx, rx) = channel::<Result<Menu, StoreError>>();
         //        let (tx, rx) = channel();
 
-        let c = 1_u8; // Nelze přes Trait -> nepodporují async fn
+        let c = 1; // Nelze přes Trait -> nepodporují async fn
                       //        let f1 = (menus::fascila(tx.clone()));
         let f2 = (menus::u_kocoura(tx.clone()));
         //        let f3 = (menus::beranek(tx.clone()));
@@ -58,12 +59,14 @@ pub async fn update_menus() {
 
         futures::join!(f2);
 
-        let mut data: Vec<Menu> = vec![];
-        for _ in 0..c {
+        let mut data: Vec<HtmlMenu> = vec![];
+        for i in 0..c {
             match rx.iter().next().expect("Data push to channel fail") {
                 Ok(x) => {
-                    println!("Kocour - ok");
-                    data.push(x)
+                    println!("{} - ok", &x.title);
+                    let mut menu = format_html_menu(x);
+                    menu.id = i;
+                    data.push(menu)
                 },
                 Err(e) => println!("{:?}", e),
             }
@@ -72,12 +75,34 @@ pub async fn update_menus() {
     }
 }
 
+fn format_html_menu(menu: Menu) -> HtmlMenu {
+    let mut html = HtmlMenu::new(menu.title);
+    for line in menu.body {
+        match line {
+            MenuLine::Title(x) => {
+                html.body += &format!("<h3><span>{}</h3></span>", x);
+            },
+            MenuLine::Item(x) => {
+                html.body += &format!(
+                    "<p>{} {}&nbsp&nbsp...<strong>{} Kč</strong></p>",
+                    x.amount,
+                    x.label,
+                    x.price
+                );
+            },
+        }
+    }
+
+    html
+}
+
 #[derive(Debug)]
 pub enum StoreError {
     Fetch(&'static str),
     Parse(&'static str),
 }
 
+// TODO lepší hlášky
 impl std::convert::From<reqwest::Error> for StoreError {
     fn from(_: reqwest::Error) -> Self {
         StoreError::Fetch("Request fetch")
@@ -87,5 +112,17 @@ impl std::convert::From<reqwest::Error> for StoreError {
 impl std::convert::From<std::io::Error> for StoreError {
     fn from(_: std::io::Error) -> Self {
         StoreError::Parse("Read data")
+    }
+}
+
+impl std::convert::From<std::option::NoneError> for StoreError {
+    fn from(_: std::option::NoneError) -> Self {
+        StoreError::Parse("None option")
+    }
+}
+
+impl std::convert::From<std::num::ParseIntError> for StoreError {
+    fn from(_: std::num::ParseIntError) -> Self {
+        StoreError::Parse("Parse to integer")
     }
 }

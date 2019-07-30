@@ -1,4 +1,4 @@
-#![feature(async_await)]
+#![feature(async_await, try_trait)]
 #[macro_use]
 extern crate nickel;
 #[macro_use]
@@ -10,7 +10,7 @@ use nickel::{HttpRouter, Nickel};
 
 use crate::lunches::store::{get_menus, update_menus};
 use chrono::{Datelike, Utc, Weekday};
-use crate::lunches::menu::Menu;
+use crate::lunches::menu::HtmlMenu;
 
 mod lunches;
 
@@ -47,7 +47,7 @@ async fn server() {
 #[derive(Serialize)]
 enum TemplateValues<'a> {
     Str(&'a str),
-    Menus(&'a [Menu]),
+    Menus(&'a [HtmlMenu]),
 }
 
 fn translate_weekday(day: Weekday) -> &'static str {

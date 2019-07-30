@@ -1,17 +1,21 @@
 #[derive(Serialize)]
+pub struct HtmlMenu {
+    pub id: usize,
+    pub title: String,
+    pub body: String,
+}
+
 pub struct Menu {
     pub title: String,
     pub body:  Vec<MenuLine>,
 }
 
-#[derive(Serialize)]
 pub struct MenuBody {
     pub amount: String,
     pub label:  String,
     pub price:  usize,
 }
 
-#[derive(Serialize)]
 pub enum MenuLine {
     Title(String),
     Item(MenuBody),
@@ -40,6 +44,16 @@ impl MenuBody {
             amount: String::new(),
             label:  String::new(),
             price:  0,
+        }
+    }
+}
+
+impl HtmlMenu {
+    pub fn new(title: String) -> Self {
+        HtmlMenu {
+            id: 0,
+            title,
+            body: String::new(),
         }
     }
 }
