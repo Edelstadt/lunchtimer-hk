@@ -1,0 +1,36 @@
+language: rust
+
+sudo: required
+
+matrix:
+  allow_failures:
+    - rust: nightly
+  include:
+    - os: linux
+      rust: nightly
+
+env:
+  - CODECOV_TOKEN="4dad02c5-a383-4b0f-a78d-1d80f7ca8662"
+
+rust:
+  - nightly
+
+jobs:
+  include:
+    - stage: test
+      script:
+        - cargo test --verbose --all
+    - stage: build
+      script: cargo build --verbose --all --release
+
+deploy:
+  provider: releases
+  api_key: "GITHUB OAUTH TOKEN"
+  file: /home/travis/build/Edelstadt/lunchtime-hk/target/release/lunchtime
+  skip_cleanup: true
+  on:
+    tags: true
+
+branches:
+  only:
+    - async
