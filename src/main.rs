@@ -9,7 +9,7 @@ use std::collections::HashMap;
 use nickel::{HttpRouter, Nickel};
 
 use crate::lunches::store::{get_menus, update_menus, Menu};
-use chrono::{Utc, Datelike, Weekday};
+use chrono::{Datelike, Utc, Weekday};
 
 mod lunches;
 

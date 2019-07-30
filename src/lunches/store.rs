@@ -2,31 +2,8 @@ use std::{sync::mpsc::channel, thread, time::Duration};
 
 use chrono::{Local, Timelike};
 
-use crate::lunches::r#impl as menus;
+use crate::lunches::{menu::Menu, r#impl as menus};
 use std::error::Error;
-
-#[derive(Serialize)]
-pub struct Menu {
-    pub id:    u8, // TODO private
-    pub title: String,
-    pub body:  String,
-}
-
-pub struct NewMenu {
-    pub title: String,
-    pub body: Vec<MenuBody>,
-}
-
-pub struct MenuLine {
-    pub amount: String,
-    pub label: String,
-    pub price: usize,
-}
-
-pub enum MenuBody{
-    Title(String),
-    Line(MenuLine),
-}
 
 static mut MENUS: Option<Vec<Menu>> = None; // TODO Mutex
 
@@ -71,20 +48,23 @@ pub async fn update_menus() {
         last_hour = curr.hour();
 
         let (tx, rx) = channel::<Result<Menu, StoreError>>();
-//        let (tx, rx) = channel();
+        //        let (tx, rx) = channel();
 
         let c = 1_u8; // Nelze přes Trait -> nepodporují async fn
-//        let f1 = (menus::fascila(tx.clone()));
+                      //        let f1 = (menus::fascila(tx.clone()));
         let f2 = (menus::u_kocoura(tx.clone()));
-//        let f3 = (menus::beranek(tx.clone()));
-//        let f4 = (menus::sova(tx.clone()));
+        //        let f3 = (menus::beranek(tx.clone()));
+        //        let f4 = (menus::sova(tx.clone()));
 
         futures::join!(f2);
 
         let mut data: Vec<Menu> = vec![];
         for _ in 0..c {
             match rx.iter().next().expect("Data push to channel fail") {
-                Ok(x) => {println!("Kocour - ok"); data.push(x)},
+                Ok(x) => {
+                    println!("Kocour - ok");
+                    data.push(x)
+                },
                 Err(e) => println!("{:?}", e),
             }
         }

@@ -22,11 +22,11 @@ pub async fn fetch(tx: Sender<Menu>) {
     res.read_to_string(&mut body);
 
     tx.send(Menu {
-        id: 2,
+        id:    2,
         title: String::from("Beranek"),
-        body: format!("{}", beranek_parser(&mut body)),
+        body:  format!("{}", beranek_parser(&mut body)),
     })
-        .expect("Beranek - Not send");
+    .expect("Beranek - Not send");
 }
 
 fn beranek_parser(body: &mut String) -> String {

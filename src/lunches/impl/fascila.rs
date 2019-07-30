@@ -23,7 +23,7 @@ pub async fn fetch(tx: Sender<Menu>) {
         title: String::from("Fascila"),
         body:  format!("{}", fascila_parser(&mut body)),
     })
-        .expect("Fascila - Not send");
+    .expect("Fascila - Not send");
 }
 
 fn fascila_parser(body: &mut String) -> String {
@@ -44,8 +44,12 @@ fn fascila_parser(body: &mut String) -> String {
                 let line = node_i.text().trim().to_string();
 
                 match i {
-                    0 => { r += format!("<h3><span>Polévka</span></h3>").as_str(); },
-                    1 => { r += format!("<h3><span>Hlavní jídla</span></h3>").as_str(); },
+                    0 => {
+                        r += format!("<h3><span>Polévka</span></h3>").as_str();
+                    },
+                    1 => {
+                        r += format!("<h3><span>Hlavní jídla</span></h3>").as_str();
+                    },
                     _ => {},
                 }
 
@@ -53,7 +57,12 @@ fn fascila_parser(body: &mut String) -> String {
                 let mut c = line.chars().rev().collect::<String>().find(" ").unwrap();
                 c = line.len() - c;
 
-                r += format!("<p>{}&nbsp&nbsp&nbsp...<strong>{}</strong></p>", line[..c].to_string(), line[c..].to_string()).as_str();
+                r += format!(
+                    "<p>{}&nbsp&nbsp&nbsp...<strong>{}</strong></p>",
+                    line[..c].to_string(),
+                    line[c..].to_string()
+                )
+                .as_str();
             }
         }
     }

@@ -1,0 +1,51 @@
+# ------------------------------------------------------------------------------
+# Cargo Build Stage
+# ------------------------------------------------------------------------------
+
+FROM rust:latest as cargo-build
+
+RUN rustup update nightly;
+
+RUN rustup default nightly;
+
+RUN apt-get update
+
+RUN apt-get install musl-tools libssl-dev pkg-config -y
+
+RUN rustup target add x86_64-unknown-linux-musl
+
+WORKDIR /usr/src/lunchtimer-hk
+
+COPY Cargo.toml Cargo.toml
+
+RUN mkdir src/
+
+RUN echo "fn main() {println!(\"if you see this, the build broke\")}" > src/main.rs
+
+RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl
+
+RUN rm -f target/x86_64-unknown-linux-musl/release/deps/lunchtimer-hk*
+
+COPY . .
+
+RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl
+
+# ------------------------------------------------------------------------------
+# Final Stage
+# ------------------------------------------------------------------------------
+
+FROM alpine:latest
+
+RUN addgroup -g 1000 lunchtimer-hk
+
+RUN adduser -D -s /bin/sh -u 1000 -G lunchtimer-hk lunchtimer-hk
+
+WORKDIR /home/lunchtimer-hk/bin/
+
+COPY --from=cargo-build /usr/src/lunchtimer-hk/target/x86_64-unknown-linux-musl/release/lunchtimer-hk .
+
+RUN chown lunchtimer-hk:lunchtimer-hk lunchtimer-hk
+
+USER lunchtimer-hk
+
+CMD ["./lunchtimer-hk"]

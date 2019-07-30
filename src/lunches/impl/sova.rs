@@ -24,7 +24,7 @@ pub async fn fetch(tx: Sender<Menu>) {
         title: String::from("Sova"),
         body:  format!("{}", parser(&mut body)),
     })
-        .expect("Sova - Not send");
+    .expect("Sova - Not send");
 }
 
 fn parser(body: &mut String) -> String {
@@ -34,20 +34,20 @@ fn parser(body: &mut String) -> String {
 
     let today = format!("{}.", Utc::now().day());
 
-        doc.find(Class("den")).for_each(|day| {
-            let date = day.attr("data_datum").expect("faield to parse date");
-            if date.starts_with(today.as_str()) {
-                let mut offer = day;
-                r += format!("<h3><span>Polévka</span></h3>").as_str();
-                r += format_row(&offer.next().unwrap()).as_str();
-                r += format!("<h3><span>Denní menu</span></h3>").as_str();
+    doc.find(Class("den")).for_each(|day| {
+        let date = day.attr("data_datum").expect("faield to parse date");
+        if date.starts_with(today.as_str()) {
+            let mut offer = day;
+            r += format!("<h3><span>Polévka</span></h3>").as_str();
+            r += format_row(&offer.next().unwrap()).as_str();
+            r += format!("<h3><span>Denní menu</span></h3>").as_str();
 
-                for i in 0..5 {
-                    offer = offer.next().unwrap();
-                    r += format_row(&offer.next().unwrap()).as_str();
-                }
+            for i in 0..5 {
+                offer = offer.next().unwrap();
+                r += format_row(&offer.next().unwrap()).as_str();
             }
-        });
+        }
+    });
     r
 }
 
@@ -55,14 +55,44 @@ fn format_row(row: &Node) -> String {
     let mut attrs = vec![];
     for (i, ch) in row.children().enumerate() {
         match i {
-            0 => { attrs.push(ch.first_child().unwrap().first_child().unwrap().as_text().unwrap()); },
-            1 => {
-                attrs.push(ch.first_child().unwrap().first_child().unwrap().first_child().unwrap().as_text().unwrap());
+            0 => {
+                attrs.push(
+                    ch.first_child()
+                        .unwrap()
+                        .first_child()
+                        .unwrap()
+                        .as_text()
+                        .unwrap(),
+                );
             },
-            2 => { attrs.push(ch.first_child().unwrap().first_child().unwrap().as_text().unwrap()); },
+            1 => {
+                attrs.push(
+                    ch.first_child()
+                        .unwrap()
+                        .first_child()
+                        .unwrap()
+                        .first_child()
+                        .unwrap()
+                        .as_text()
+                        .unwrap(),
+                );
+            },
+            2 => {
+                attrs.push(
+                    ch.first_child()
+                        .unwrap()
+                        .first_child()
+                        .unwrap()
+                        .as_text()
+                        .unwrap(),
+                );
+            },
             _ => break,
         }
     }
 
-    format!("<p>{} {}&nbsp&nbsp&nbsp...<strong>{}</strong></p>", attrs[0], attrs[1], attrs[2])
+    format!(
+        "<p>{} {}&nbsp&nbsp&nbsp...<strong>{}</strong></p>",
+        attrs[0], attrs[1], attrs[2]
+    )
 }

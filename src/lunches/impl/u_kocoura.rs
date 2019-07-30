@@ -1,4 +1,4 @@
-use std::{io::Read, sync::mpsc::Sender};
+use std::{error::Error, io::Read, sync::mpsc::Sender};
 
 use reqwest::Client;
 use select::{
@@ -6,8 +6,7 @@ use select::{
     predicate::{Attr, Class, Name},
 };
 
-use crate::lunches::store::{Menu, StoreError};
-use std::error::Error;
+use crate::lunches::{menu::Menu, store::StoreError};
 
 pub async fn fetch(tx: Sender<Result<Menu, StoreError>>) {
     tx.send(fetch_data()).unwrap();
@@ -17,20 +16,20 @@ pub fn fetch_data() -> Result<Menu, StoreError> {
     let c = Client::new();
     let mut res = c
         .get("https://www.ukocourahk.cz/denni-menu/")
-        .send()
-        .or(Err(StoreError::Fetch("Kocour: failed to fetch menu")))?;
+        .send()?;
+        //.or(Err(StoreError::Fetch("Kocour: failed to fetch menu")))?;
 
     let mut body = String::new();
-    res.read_to_string(&mut body);
+    res.read_to_string(&mut body)
+        .or(Err(StoreError::Fetch("Kocour: failed to read fetched menu")))?;
 
-    Ok(Menu {
-        id: 3, // TODO proper id
-        title: String::from("U Kocoura"),
-        body: format!("{}", kocour_denni_parser(&mut body)?),
-    })
+    let mut menu = Menu::new("U kocoura");
+    kocour_denni_parser(&mut menu, body)?;
+
+    Ok(menu)
 }
 
-fn kocour_denni_parser(body: &mut String) -> Result<String, StoreError> {
+fn kocour_denni_parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
     let mut doc = Document::from_read(body.as_bytes())
         .or(Err(StoreError::Fetch("Kocour: failed to parse menu")))?;
 
@@ -41,14 +40,24 @@ fn kocour_denni_parser(body: &mut String) -> Result<String, StoreError> {
             if !line.ends_with("Kč") {
                 r += format!("<h3><span>{}</span></h3>", line).as_str();
             } else {
-                let mut c = line.chars().rev().skip(3).collect::<String>().find(" ").ok_or(StoreError::Parse("Kocour: parse price"))?;
+                let mut c = line
+                    .chars()
+                    .rev()
+                    .skip(3)
+                    .collect::<String>()
+                    .find(" ")
+                    .ok_or(StoreError::Parse("Kocour: parse price"))?;
                 c = line.len() - c;
 
-                // TODO nedělat line[x..y] !! Pokud jde o UTF-16, tak to zpanikaří
-                r += format!("<p>{}&nbsp&nbsp&nbsp...<strong>{}</strong></p>", line.chars().take(c).collect::<String>(), line.chars().skip(c).collect::<String>()).as_str();
+                r += format!(
+                    "<p>{}&nbsp&nbsp&nbsp...<strong>{}</strong></p>",
+                    line.chars().take(c).collect::<String>(),
+                    line.chars().skip(c).collect::<String>()
+                )
+                .as_str();
             }
         }
     }
 
-    Ok(r)
+    Ok()
 }

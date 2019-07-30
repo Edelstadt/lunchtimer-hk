@@ -1,30 +1,43 @@
-# select build image
-FROM rust:1.23 as build
+FROM rust:latest
 
-# create a new empty shell project
-RUN USER=root cargo new --bin lunchtime
-WORKDIR /my_project
+RUN rustup update nightly;
+RUN rustup default nightly;
 
-# copy over your manifests
-COPY ./Cargo.lock ./Cargo.lock
-COPY ./Cargo.toml ./Cargo.toml
+RUN apt-get update
+RUN apt-get install libssl-dev pkg-config -y
 
-# this build step will cache your dependencies
-RUN cargo build --release
-RUN rm src/*.rs
+WORKDIR /usr/src/lunchtimer-hk
 
-# copy your source tree
-COPY ./src ./src
+COPY Cargo.toml Cargo.toml
 
-# build for release
-RUN rm ./target/release/deps/lunchtime*
+RUN mkdir src/
+
+RUN echo "fn main() {println!(\"if you see this, the build broke\")}" > src/main.rs
+
 RUN cargo build --release
 
-# our final base
-FROM rust:1.23
+RUN chmod +x /usr/src/lunchtimer-hk/target/release/lunchtime
 
-# copy the build artifact from the build stage
-COPY --from=build /target/release/lunchtime .
+RUN touch /usr/log.txt
 
-# set the startup command to run your binary
-CMD ["./lunchtime"]
+CMD "tail -f > /usr/log.txt"
+
+# ------------------------------------------------------------------------------
+# Final Stage
+# ------------------------------------------------------------------------------
+
+#FROM alpine:latest
+#
+#RUN addgroup -g 1000 lunchtimer-hk
+#
+#RUN adduser -D -s /bin/sh -u 1000 -G lunchtimer-hk lunchtimer-hk
+#
+#WORKDIR /home/lunchtimer-hk/bin/
+#
+#COPY --from=cargo-build /usr/src/lunchtimer-hk/target/x86_64-unknown-linux-musl/release/lunchtimer-hk .
+#
+#RUN chown lunchtimer-hk:lunchtimer-hk lunchtimer-hk
+#
+#USER lunchtimer-hk
+#
+#CMD ["./lunchtimer-hk"]
