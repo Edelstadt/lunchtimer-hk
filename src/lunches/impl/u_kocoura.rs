@@ -59,7 +59,7 @@ fn kocour_denni_parser(menu: &mut Menu, body: String) -> Result<(), StoreError> 
                         MenuBody{
                             amount: line.chars().take(am).collect::<String>(),
                             label: line.chars().skip(am).take(c - am).collect::<String>(),
-                            price: line.chars().skip(c + 1).collect::<String>().split(' ').next()?.parse::<usize>()?,
+                            price: line.chars().skip(c + 1).collect::<String>().split(' ').next()?.parse::<usize>()?, // TODO char::is_numberic
                         }
                     )
                 );

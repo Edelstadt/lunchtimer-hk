@@ -68,7 +68,7 @@ pub async fn update_menus() {
                     menu.id = i;
                     data.push(menu)
                 },
-                Err(e) => println!("{:?}", e),
+                Err(e) => println!("{:?}", e), // TODO hláška která restauračka padla
             }
         }
         set_menus(data);

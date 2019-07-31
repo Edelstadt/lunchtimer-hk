@@ -80,8 +80,8 @@ fn format_row(row: &Node) -> Result<MenuBody, StoreError> {
                         .first_child()?
                         .as_text()?
                         .chars()
-                        .filter(|ch| ch.is_numeric())
-                        .collect::<String>()
+                        .filter(|ch| ch.is_numeric()) // TODO char::is_numberic
+                        .collect::<String>() // TODO &str
                         .parse::<usize>()?;
             },
             _ => break,
