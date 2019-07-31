@@ -51,13 +51,13 @@ pub async fn update_menus() {
         let (tx, rx) = channel::<Result<Menu, StoreError>>();
         //        let (tx, rx) = channel();
 
-        let c = 1; // Nelze přes Trait -> nepodporují async fn
+        let c = 2; // Nelze přes Trait -> nepodporují async fn
                       //        let f1 = (menus::fascila(tx.clone()));
         let f2 = (menus::u_kocoura(tx.clone()));
         //        let f3 = (menus::beranek(tx.clone()));
-        //        let f4 = (menus::sova(tx.clone()));
+                let f4 = (menus::sova(tx.clone()));
 
-        futures::join!(f2);
+        futures::join!(f2, f4);
 
         let mut data: Vec<HtmlMenu> = vec![];
         for i in 0..c {

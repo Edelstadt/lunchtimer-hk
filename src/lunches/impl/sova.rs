@@ -7,92 +7,86 @@ use select::{
     predicate::{Attr, Class, Name, Predicate},
 };
 
-use crate::lunches::store::Menu;
+use crate::lunches::store::{StoreError};
 use select::node::Node;
+use crate::lunches::menu::{Menu, MenuLine, MenuBody};
 
-pub async fn fetch(tx: Sender<Menu>) {
+pub async fn fetch(tx: Sender<Result<Menu, StoreError>>) {
+    tx.send(fetch_data()).unwrap();
+}
+
+pub fn fetch_data() -> Result<Menu, StoreError> {
     let c = Client::new();
     let mut res = c
         .get("https://www.sovahk.cz/jidelni_listek")
-        .send()
-        .expect("Sova - request fail");
+        .send()?;
 
     let mut body = String::new();
-    res.read_to_string(&mut body);
-    tx.send(Menu {
-        id:    4,
-        title: String::from("Sova"),
-        body:  format!("{}", parser(&mut body)),
-    })
-    .expect("Sova - Not send");
+    res.read_to_string(&mut body)?;
+
+    let mut menu = Menu::new("Sova");
+    parser(&mut menu, body)?;
+
+    Ok(menu)
 }
 
-fn parser(body: &mut String) -> String {
-    let mut doc = Document::from_read(body.as_bytes()).expect("Sova - read body failed");
+fn parser(menu: &mut Menu,body: String) -> Result<(), StoreError> {
+    let mut doc = Document::from_read(body.as_bytes())?;
     let mut gg: usize = 0;
-    let mut r = String::new();
 
     let today = format!("{}.", Utc::now().day());
 
-    doc.find(Class("den")).for_each(|day| {
-        let date = day.attr("data_datum").expect("faield to parse date");
+    doc.find(Class("den")).try_for_each(|day| -> Result<(), StoreError> {
+        let date = day.attr("data_datum").ok_or(StoreError::Parse("Failed to parse date"))?;
         if date.starts_with(today.as_str()) {
             let mut offer = day;
-            r += format!("<h3><span>Polévka</span></h3>").as_str();
-            r += format_row(&offer.next().unwrap()).as_str();
-            r += format!("<h3><span>Denní menu</span></h3>").as_str();
+            menu.body.push(MenuLine::Title(String::from("Polévka")));
+            menu.body.push(MenuLine::Item(format_row(&offer.next().ok_or(StoreError::Parse("parse"))?)?));
+            menu.body.push(MenuLine::Title(String::from("Denní menu")));
 
             for i in 0..5 {
-                offer = offer.next().unwrap();
-                r += format_row(&offer.next().unwrap()).as_str();
+                offer = offer.next().ok_or(StoreError::Parse("parse"))?;
+                menu.body.push(MenuLine::Item(format_row(&offer.next().ok_or(StoreError::Parse("parse"))?)?));
             }
         }
-    });
-    r
+        Ok(())
+    })?;
+
+    Ok(())
 }
 
-fn format_row(row: &Node) -> String {
-    let mut attrs = vec![];
+fn format_row(row: &Node) -> Result<MenuBody, StoreError> {
+    let mut body = MenuBody::empty();
     for (i, ch) in row.children().enumerate() {
         match i {
             0 => {
-                attrs.push(
-                    ch.first_child()
-                        .unwrap()
-                        .first_child()
-                        .unwrap()
-                        .as_text()
-                        .unwrap(),
-                );
+                body.amount =
+                    ch.first_child()?
+                        .first_child()?
+                        .as_text()?
+                        .to_string();
             },
             1 => {
-                attrs.push(
-                    ch.first_child()
-                        .unwrap()
-                        .first_child()
-                        .unwrap()
-                        .first_child()
-                        .unwrap()
-                        .as_text()
-                        .unwrap(),
-                );
+                body.label =
+                    ch.first_child()?
+                        .first_child()?
+                        .first_child()?
+                        .as_text()?
+                        .to_string();
             },
             2 => {
-                attrs.push(
-                    ch.first_child()
-                        .unwrap()
-                        .first_child()
-                        .unwrap()
-                        .as_text()
-                        .unwrap(),
-                );
+                body.price =
+                    ch.first_child()?
+                        .first_child()?
+                        .as_text()?
+                        .chars()
+                        .filter(|ch| ch.is_numeric())
+                        .collect::<String>()
+                        .parse::<usize>()?;
             },
             _ => break,
         }
     }
 
-    format!(
-        "<p>{} {}&nbsp&nbsp&nbsp...<strong>{}</strong></p>",
-        attrs[0], attrs[1], attrs[2]
-    )
+    Ok(body)
 }

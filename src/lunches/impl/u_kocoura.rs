@@ -6,8 +6,8 @@ use select::{
     predicate::{Attr, Class, Name},
 };
 
-use crate::lunches::{menu::Menu, store::StoreError};
-use crate::lunches::menu::{MenuLine, MenuBody};
+use crate::lunches::{store::StoreError};
+use crate::lunches::menu::{Menu, MenuLine, MenuBody};
 
 pub async fn fetch(tx: Sender<Result<Menu, StoreError>>) {
     tx.send(fetch_data()).unwrap();
