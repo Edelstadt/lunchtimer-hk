@@ -6,7 +6,6 @@ use crate::lunches::{
     menu::{HtmlMenu, Menu, MenuLine},
     r#impl as menus,
 };
-use reqwest::Error;
 
 static mut MENUS: Option<Vec<HtmlMenu>> = None; // TODO Mutex
 
@@ -54,9 +53,9 @@ pub async fn update_menus() {
 
         let c = 3; // Nelze přes Trait -> nepodporují async fn
                    //        let f1 = (menus::fascila(tx.clone()));
-        let f2 = (menus::u_kocoura(tx.clone()));
-        let f3 = (menus::beranek(tx.clone()));
-        let f4 = (menus::sova(tx.clone()));
+        let f2 = menus::u_kocoura(tx.clone());
+        let f3 = menus::beranek(tx.clone());
+        let f4 = menus::sova(tx.clone());
 
         futures::join!(f2, f3, f4);
 

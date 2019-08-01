@@ -1,10 +1,10 @@
-use std::{io::Read, sync::mpsc::Sender};
+use std::{sync::mpsc::Sender};
 
 use chrono::{Datelike, Utc};
 use reqwest::Client;
 use select::{
     document::Document,
-    predicate::{Attr, Class, Name, Predicate},
+    predicate::{Class},
 };
 
 use crate::lunches::{menu::Menu, store::StoreError};
@@ -17,23 +17,21 @@ pub async fn fetch(tx: Sender<Result<Menu, StoreError>>) {
 
 pub fn fetch_data() -> Result<Menu, StoreError> {
     let c = Client::new();
-    let mut res = c
+    let _res = c
         .get("https://www.pivovarberanek.cz/#jidelni-listek")
         .send()?;
 
-    let mut body = String::new();
-    res.read_to_string(&mut body);
+    let body = String::new();
 
     let mut menu = Menu::new("Beránek");
-    parser(&mut menu, body);
+    parser(&mut menu, body).expect("Beranek - parse error");
 
     Ok(menu)
 }
 
 fn parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
-    let mut doc = Document::from_read(body.as_bytes())?;
+    let doc = Document::from_read(body.as_bytes())?;
 
-    let mut r = String::new();
     for node in doc.find(Class("nabidkatext")) {
         let now = Utc::now();
         let rr = format!("{}.{}", now.day(), now.month());

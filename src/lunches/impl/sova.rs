@@ -4,7 +4,7 @@ use chrono::{Datelike, Utc};
 use reqwest::Client;
 use select::{
     document::Document,
-    predicate::{Attr, Class, Name, Predicate},
+    predicate::{Class},
 };
 
 use crate::lunches::{
@@ -31,8 +31,7 @@ pub fn fetch_data() -> Result<Menu, StoreError> {
 }
 
 fn parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
-    let mut doc = Document::from_read(body.as_bytes())?;
-    let mut gg: usize = 0;
+    let doc = Document::from_read(body.as_bytes())?;
 
     let today = format!("{}.", Utc::now().day());
 
@@ -52,7 +51,7 @@ fn parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
                 )?));
                 menu.body.push(MenuLine::Title(String::from("Denní menu")));
 
-                for i in 0..5 {
+                for _i in 0..5 {
                     offer = offer.next().ok_or(StoreError::Parse("parse"))?;
                     menu.body.push(MenuLine::Item(format_row(
                         &offer.next().ok_or(StoreError::Parse("parse"))?,

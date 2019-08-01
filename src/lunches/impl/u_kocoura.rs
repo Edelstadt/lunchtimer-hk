@@ -1,9 +1,9 @@
-use std::{error::Error, io::Read, sync::mpsc::Sender};
+use std::{io::Read, sync::mpsc::Sender};
 
 use reqwest::Client;
 use select::{
     document::Document,
-    predicate::{Attr, Class, Name},
+    predicate::{Class, Name},
 };
 
 use crate::lunches::{
@@ -29,7 +29,7 @@ pub fn fetch_data() -> Result<Menu, StoreError> {
 }
 
 fn kocour_denni_parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
-    let mut doc = Document::from_read(body.as_bytes())?;
+    let doc = Document::from_read(body.as_bytes())?;
 
     for node in doc.find(Class("cms-content")) {
         for tr in node.find(Name("tr")) {
