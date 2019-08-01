@@ -2,9 +2,11 @@ use std::{sync::mpsc::channel, thread, time::Duration};
 
 use chrono::{Local, Timelike};
 
-use crate::lunches::{menu::Menu, r#impl as menus};
+use crate::lunches::{
+    menu::{HtmlMenu, Menu, MenuLine},
+    r#impl as menus,
+};
 use reqwest::Error;
-use crate::lunches::menu::{MenuLine, HtmlMenu};
 
 static mut MENUS: Option<Vec<HtmlMenu>> = None; // TODO Mutex
 
@@ -49,15 +51,14 @@ pub async fn update_menus() {
         last_hour = curr.hour();
 
         let (tx, rx) = channel::<Result<Menu, StoreError>>();
-        //        let (tx, rx) = channel();
 
-        let c = 2; // Nelze přes Trait -> nepodporují async fn
-                      //        let f1 = (menus::fascila(tx.clone()));
+        let c = 3; // Nelze přes Trait -> nepodporují async fn
+                   //        let f1 = (menus::fascila(tx.clone()));
         let f2 = (menus::u_kocoura(tx.clone()));
-        //        let f3 = (menus::beranek(tx.clone()));
-                let f4 = (menus::sova(tx.clone()));
+        let f3 = (menus::beranek(tx.clone()));
+        let f4 = (menus::sova(tx.clone()));
 
-        futures::join!(f2, f4);
+        futures::join!(f2, f3, f4);
 
         let mut data: Vec<HtmlMenu> = vec![];
         for i in 0..c {
@@ -82,12 +83,16 @@ fn format_html_menu(menu: Menu) -> HtmlMenu {
             MenuLine::Title(x) => {
                 html.body += &format!("<h3><span>{}</h3></span>", x);
             },
+            MenuLine::Item(ref x) if x.price > 0 => {
+                html.body += &format!(
+                    "<p>{} {}&nbsp&nbsp<strong>{} Kč</strong></p>",
+                    x.amount, x.label, x.price
+                );
+            },
             MenuLine::Item(x) => {
                 html.body += &format!(
-                    "<p>{} {}&nbsp&nbsp...<strong>{} Kč</strong></p>",
-                    x.amount,
-                    x.label,
-                    x.price
+                    "<p>{} {}</p>",
+                    x.amount, x.label
                 );
             },
         }
@@ -124,5 +129,11 @@ impl std::convert::From<std::option::NoneError> for StoreError {
 impl std::convert::From<std::num::ParseIntError> for StoreError {
     fn from(_: std::num::ParseIntError) -> Self {
         StoreError::Parse("Parse to integer")
+    }
+}
+
+impl std::convert::From<regex::Error> for StoreError {
+    fn from(_: regex::Error) -> Self {
+        StoreError::Parse("Parse regex")
     }
 }

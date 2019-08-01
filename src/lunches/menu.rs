@@ -1,8 +1,8 @@
 #[derive(Serialize)]
 pub struct HtmlMenu {
-    pub id: usize,
+    pub id:    usize,
     pub title: String,
-    pub body: String,
+    pub body:  String,
 }
 
 pub struct Menu {
