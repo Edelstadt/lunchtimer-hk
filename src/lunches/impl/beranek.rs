@@ -40,7 +40,7 @@ fn parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
 
         let re = Regex::new(r"(?P<date>\D+\s\d+\.\d+\.)(?P<soup>\D+)(?P<menu1>Menu\s\d+:\s\D+\s\d{1,4},-)(?P<menu2>Menu\s\d:\s\D+\d{1,4},-)")?;
         for part in re.captures_iter(node.text().as_str()) {
-            let date = part.name("date").unwrap();
+            let date = part.name("date")?;
             if date.as_str().contains(rr.as_str()) {
                 menu.body.push(MenuLine::Title(String::from("Polévka")));
                 menu.body.push(MenuLine::Item(MenuBody{
