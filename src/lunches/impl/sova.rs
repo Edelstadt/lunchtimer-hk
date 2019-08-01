@@ -37,7 +37,9 @@ fn parser(menu: &mut Menu,body: String) -> Result<(), StoreError> {
     let today = format!("{}.", Utc::now().day());
 
     doc.find(Class("den")).try_for_each(|day| -> Result<(), StoreError> {
-        let date = day.attr("data_datum").ok_or(StoreError::Parse("Failed to parse date"))?;
+        let mut date: String = day.attr("data_datum").ok_or(StoreError::Parse("Failed to parse date"))?.to_string();
+        date = date.trim_start_matches("0").to_string();
+
         if date.starts_with(today.as_str()) {
             let mut offer = day;
             menu.body.push(MenuLine::Title(String::from("Polévka")));
