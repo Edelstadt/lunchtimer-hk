@@ -15,13 +15,6 @@ env:
 rust:
   - nightly
 
-before_deploy:
-  - export TRAVIS_TAG="1.0.$TRAVIS_BUILD_NUMBER"
-  - echo "$TRAVIS_TAG" "$TRAVIS_COMMIT"
-  - git config --local user.name "$USER_NAME"
-  - git config --local user.email "$USER_EMAIL"
-  - git tag "$TRAVIS_TAG" "$TRAVIS_COMMIT"
-
 jobs:
   include:
     - stage: test
@@ -30,6 +23,12 @@ jobs:
     - stage: build
       script: cargo build --verbose --all --release
 
+before_deploy:
+  - export TRAVIS_TAG="1.0.$TRAVIS_BUILD_NUMBER"
+  - echo "$TRAVIS_TAG" "$TRAVIS_COMMIT"
+  - git config --local user.name "$USER_NAME"
+  - git config --local user.email "$USER_EMAIL"
+  - git tag "$TRAVIS_TAG" "$TRAVIS_COMMIT"
 deploy:
   provider: releases
   tag_name: $TRAVIS_TAG
@@ -40,7 +39,7 @@ deploy:
   file: target/release/lunchtime
   skip_cleanup: true
   on:
-    tags: true
+    branch: async
 
 branches:
   only:
