@@ -15,6 +15,13 @@ env:
 rust:
   - nightly
 
+before_deploy:
+  - export TRAVIS_TAG="1.0.$TRAVIS_BUILD_NUMBER"
+  - echo "$TRAVIS_TAG" "$TRAVIS_COMMIT"
+  - git config --local user.name "$USER_NAME"
+  - git config --local user.email "$USER_EMAIL"
+  - git tag "$TRAVIS_TAG" "$TRAVIS_COMMIT"
+
 jobs:
   include:
     - stage: test
@@ -25,8 +32,12 @@ jobs:
 
 deploy:
   provider: releases
+  tag_name: $TRAVIS_TAG
+  target_commitish: $TRAVIS_COMMIT
+  name: $TRAVIS_TAG
+  overwrite: true
   api_key: $GITHUB_API_KEY
-  file: /home/travis/build/Edelstadt/lunchtime-hk/target/release/lunchtime
+  file: target/release/lunchtime
   skip_cleanup: true
   on:
     tags: true
