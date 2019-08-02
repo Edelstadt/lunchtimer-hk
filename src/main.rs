@@ -6,13 +6,13 @@ extern crate serde_derive;
 
 use std::collections::HashMap;
 
+use chrono::{Datelike, Utc, Weekday};
 use nickel::{HttpRouter, Nickel};
 
 use crate::lunches::{
     menu::HtmlMenu,
     store::{get_menus, update_menus},
 };
-use chrono::{Datelike, Utc, Weekday};
 
 mod lunches;
 
@@ -43,7 +43,7 @@ async fn server() {
         },
     );
 
-    server.listen("127.0.0.5:8000").expect("Server fail");
+    server.listen("127.0.0.1:8080").expect("Server fail");
 }
 
 #[derive(Serialize)]
