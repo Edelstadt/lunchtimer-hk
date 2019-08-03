@@ -9,7 +9,7 @@ use crate::lunches::{
 
 static mut MENUS: Option<Vec<HtmlMenu>> = None; // TODO Mutex
 
-pub fn get_menus() -> &'static [HtmlMenu] {
+pub fn get_menus<'a>() -> &'a [HtmlMenu] {
     unsafe {
         match MENUS {
             Some(ref x) => x,
@@ -102,37 +102,37 @@ fn format_html_menu(menu: Menu) -> HtmlMenu {
 
 #[derive(Debug)]
 pub enum StoreError {
-    Fetch(&'static str),
-    Parse(&'static str),
+    Fetch(String),
+    Parse(String),
 }
 
 // TODO lepší hlášky
 impl std::convert::From<reqwest::Error> for StoreError {
     fn from(_: reqwest::Error) -> Self {
-        StoreError::Fetch("Request fetch")
+        StoreError::Fetch(String::from("Request fetch"))
     }
 }
 
 impl std::convert::From<std::io::Error> for StoreError {
     fn from(_: std::io::Error) -> Self {
-        StoreError::Parse("Read data")
+        StoreError::Parse(String::from("Read data"))
     }
 }
 
 impl std::convert::From<std::option::NoneError> for StoreError {
     fn from(_: std::option::NoneError) -> Self {
-        StoreError::Parse("None option")
+        StoreError::Parse(String::from("None option"))
     }
 }
 
 impl std::convert::From<std::num::ParseIntError> for StoreError {
     fn from(_: std::num::ParseIntError) -> Self {
-        StoreError::Parse("Parse to integer")
+        StoreError::Parse(String::from("Parse to integer"))
     }
 }
 
 impl std::convert::From<regex::Error> for StoreError {
     fn from(_: regex::Error) -> Self {
-        StoreError::Parse("Parse regex")
+        StoreError::Parse(String::from("Parse regex"))
     }
 }

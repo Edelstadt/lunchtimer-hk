@@ -38,8 +38,7 @@ fn parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
     doc.find(Class("den"))
         .try_for_each(|day| -> Result<(), StoreError> {
             let mut date: String = day
-                .attr("data_datum")
-                .ok_or(StoreError::Parse("Failed to parse date"))?
+                .attr("data_datum")?
                 .to_string();
             date = date.trim_start_matches("0").to_string();
 
@@ -47,14 +46,14 @@ fn parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
                 let mut offer = day;
                 menu.body.push(MenuLine::Title(String::from("Polévka")));
                 menu.body.push(MenuLine::Item(format_row(
-                    &offer.next().ok_or(StoreError::Parse("parse"))?,
+                    &offer.next().ok_or(StoreError::Parse(String::from("parse")))?,
                 )?));
                 menu.body.push(MenuLine::Title(String::from("Denní menu")));
 
                 for _i in 0..5 {
-                    offer = offer.next().ok_or(StoreError::Parse("parse"))?;
+                    offer = offer.next()?;
                     menu.body.push(MenuLine::Item(format_row(
-                        &offer.next().ok_or(StoreError::Parse("parse"))?,
+                        &offer.next()?,
                     )?));
                 }
             }
