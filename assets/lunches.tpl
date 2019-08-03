@@ -100,7 +100,19 @@ p {
 {{#menus}}
 <div id={{id}} class="tabcontent">
     <div class="container">
-      {{{body}}}
+        {{#body}}
+            {{#type_title}}
+                <h3><span>{{title}}</span></h3>
+            {{/type_title}}
+            {{#type_body}}
+                <p>
+                    {{amount}} {{label}}&nbsp&nbsp
+                    {{#price}}
+                        <strong>{{price}} Kč</strong>
+                    {{/price}}
+                </p>
+            {{/type_body}}
+        {{/body}}
     </div>
 </div>
 {{/menus}}

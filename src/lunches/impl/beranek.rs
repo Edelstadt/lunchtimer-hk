@@ -1,21 +1,20 @@
-use std::{sync::mpsc::Sender};
+use std::sync::mpsc::Sender;
 
 use chrono::{Datelike, Utc};
+use regex::{Captures, Regex};
 use reqwest::Client;
-use select::{
-    document::Document,
-    predicate::{Class},
+use select::{document::Document, predicate::Class};
+
+use crate::lunches::{
+    menu::{Menu, MenuBody, MenuLine},
+    store::StoreError,
 };
 
-use crate::lunches::{menu::Menu, store::StoreError};
-use regex::{Regex, Captures};
-use crate::lunches::menu::{MenuLine, MenuBody};
-
-pub async fn fetch(tx: Sender<Result<Menu, StoreError>>) {
+pub(crate) async fn fetch(tx: Sender<Result<Menu, StoreError>>) {
     tx.send(fetch_data()).unwrap();
 }
 
-pub fn fetch_data() -> Result<Menu, StoreError> {
+fn fetch_data() -> Result<Menu, StoreError> {
     let c = Client::new();
     let _res = c
         .get("https://www.pivovarberanek.cz/#jidelni-listek")
@@ -41,10 +40,15 @@ fn parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
             let date = part.name("date")?;
             if date.as_str().contains(rr.as_str()) {
                 menu.body.push(MenuLine::Title(String::from("Polévka")));
-                menu.body.push(MenuLine::Item(MenuBody{
-                    price: 0,
+                menu.body.push(MenuLine::Item(MenuBody {
+                    price:  0,
                     amount: String::new(),
-                    label: part.name("soup")?.as_str().chars().skip(8).collect::<String>(),
+                    label:  part
+                        .name("soup")?
+                        .as_str()
+                        .chars()
+                        .skip(8)
+                        .collect::<String>(),
                 }));
 
                 menu.body.push(MenuLine::Title(String::from("Denní menu")));
@@ -61,11 +65,21 @@ fn parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
 fn parse_line(part: &Captures, tag: &str) -> Result<MenuBody, StoreError> {
     let mut line = part.name(tag)?.as_str().chars().skip(8).collect::<String>();
     line = line.trim_end_matches(",-").to_string();
-    let price = line.chars().rev().take_while(|ch| ch.is_numeric()).collect::<String>().chars().rev().collect::<String>();
+    let price = line
+        .chars()
+        .rev()
+        .take_while(|ch| ch.is_numeric())
+        .collect::<String>()
+        .chars()
+        .rev()
+        .collect::<String>();
 
-    Ok(MenuBody{
-        price: price.parse::<usize>()?,
+    Ok(MenuBody {
+        price:  price.parse::<usize>()?,
         amount: String::new(),
-        label: line.chars().take(line.chars().count() - price.chars().count()).collect(),
+        label:  line
+            .chars()
+            .take(line.chars().count() - price.chars().count())
+            .collect(),
     })
 }

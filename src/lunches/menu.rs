@@ -1,8 +1,28 @@
 #[derive(Serialize)]
 pub struct HtmlMenu {
-    pub id:    usize,
+    id:        usize,
     pub title: String,
-    pub body:  String,
+    pub body:  Vec<HtmlBodyType>,
+}
+
+#[derive(Serialize)]
+pub struct HtmlTitleLine {
+    type_title: bool,
+    pub title:  String,
+}
+
+#[derive(Serialize)]
+pub struct HtmlBodyLine {
+    type_body:  bool,
+    pub amount: String,
+    pub label:  String,
+    pub price:  Option<usize>,
+}
+
+#[derive(Serialize)]
+pub enum HtmlBodyType {
+    Title(HtmlTitleLine),
+    Line(HtmlBodyLine),
 }
 
 pub struct Menu {
@@ -31,15 +51,7 @@ impl Menu {
 }
 
 impl MenuBody {
-    pub fn new(amount: String, label: String, price: usize) -> Self {
-        MenuBody {
-            amount,
-            label,
-            price,
-        }
-    }
-
-    pub fn empty() -> Self {
+    pub fn new() -> Self {
         MenuBody {
             amount: String::new(),
             label:  String::new(),
@@ -53,7 +65,41 @@ impl HtmlMenu {
         HtmlMenu {
             id: 0,
             title,
-            body: String::new(),
+            body: vec![],
         }
+    }
+
+    pub fn set_id(&mut self, id: usize) {
+        self.id = id;
+    }
+}
+
+impl From<Menu> for HtmlMenu {
+    fn from(menu: Menu) -> Self {
+        let mut html = HtmlMenu::new(menu.title);
+
+        for line in menu.body {
+            match line {
+                MenuLine::Title(x) => {
+                    html.body.push(HtmlBodyType::Title(HtmlTitleLine {
+                        type_title: true,
+                        title:      x,
+                    }));
+                },
+                MenuLine::Item(x) => {
+                    html.body.push(HtmlBodyType::Line(HtmlBodyLine {
+                        type_body: true,
+                        amount:    x.amount,
+                        label:     x.label,
+                        price:     match x.price {
+                            0 => None,
+                            p => Some(p),
+                        },
+                    }));
+                },
+            }
+        }
+
+        html
     }
 }

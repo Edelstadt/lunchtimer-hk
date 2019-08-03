@@ -11,11 +11,11 @@ use crate::lunches::{
     store::StoreError,
 };
 
-pub async fn fetch(tx: Sender<Result<Menu, StoreError>>) {
+pub(crate) async fn fetch(tx: Sender<Result<Menu, StoreError>>) {
     tx.send(fetch_data()).unwrap();
 }
 
-pub fn fetch_data() -> Result<Menu, StoreError> {
+fn fetch_data() -> Result<Menu, StoreError> {
     let c = Client::new();
     let mut res = c.get("https://www.ukocourahk.cz/denni-menu/").send()?;
 
