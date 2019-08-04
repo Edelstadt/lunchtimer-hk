@@ -108,7 +108,7 @@ p {
                 <p>
                     {{amount}} {{label}}&nbsp&nbsp
                     {{#price}}
-                        <strong>{{price}} Kč</strong>
+                        <strong>{{price}}&nbspKč</strong>
                     {{/price}}
                 </p>
             {{/type_body}}
