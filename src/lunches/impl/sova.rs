@@ -66,7 +66,7 @@ fn format_row(row: &Node) -> Result<MenuBody, StoreError> {
             },
             1 => {
                 body.label = ch
-                    .first_child()?
+                    .first_child()? // TODO try text -> might get through children
                     .first_child()?
                     .first_child()?
                     .as_text()?
