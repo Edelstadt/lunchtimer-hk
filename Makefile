@@ -18,9 +18,9 @@ build:
 upload: build
 	mkdir -p ${BASEDIR}/rsync_dir/assets
 	cp ${BASEDIR}/target/release/${NAME} ${BASEDIR}/rsync_dir
-	cp -r ${BASEDIR}/assets ${BASEDIR}/rsync_dir/assets
+	cp -r ${BASEDIR}/assets/. ${BASEDIR}/rsync_dir/assets
 	rsync -avz --exclude=".*" --delete -e "ssh" \
-		${BASEDIR}/rsync_dir lunchtime:${DESTINATIONDIR}
+		${BASEDIR}/rsync_dir/ lunchtime:${DESTINATIONDIR}
 	rm -rf ${BASEDIR}/rsync_dir
 
 restart-services:
