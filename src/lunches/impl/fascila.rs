@@ -7,7 +7,6 @@ use select::{
     document::Document,
     predicate::{Class, Name},
 };
-use select::node::Node;
 
 use crate::lunches::{
     menu::{Menu, MenuBody, MenuLine},
