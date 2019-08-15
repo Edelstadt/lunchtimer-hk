@@ -18,4 +18,6 @@ encoding = "0.2.33"
 # TODO vyhodit - závislot na Tokio, Hyper a hafo dalšího bordelu
 reqwest = "0.9.19"
 select = "0.4.3"
+pdf-extract = "0.5.1"
+lopdf = "0.22"
 

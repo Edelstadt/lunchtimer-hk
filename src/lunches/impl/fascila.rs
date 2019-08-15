@@ -82,6 +82,7 @@ fn format_row(row: String) -> Result<MenuBody, StoreError> {
             Some(ok) => {
                 body.price = ok.as_str().parse().clone()?;
             },
+
             _ => {},
         }
     }

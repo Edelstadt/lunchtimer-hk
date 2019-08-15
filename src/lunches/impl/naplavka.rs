@@ -3,8 +3,10 @@ use std::sync::mpsc::Sender;
 use chrono::{Datelike, Utc};
 use encoding::all::WINDOWS_1250;
 use reqwest::Client;
-use select::{document::Document, predicate::Name};
-use select::predicate::Class;
+use select::{
+    document::Document,
+    predicate::{Class, Name},
+};
 
 use crate::lunches::{
     menu::{Menu, MenuBody, MenuLine},
