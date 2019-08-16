@@ -12,6 +12,7 @@ use nickel::{HttpRouter, Nickel};
 use crate::lunches::{
     menu::HtmlMenu,
     store::{get_menus, update_menus},
+    helpers::translate_weekday,
 };
 
 mod lunches;
@@ -50,16 +51,4 @@ async fn server() {
 enum TemplateValues<'a> {
     Str(&'a str),
     Menus(&'a [HtmlMenu]),
-}
-
-fn translate_weekday(day: Weekday) -> &'static str {
-    match day {
-        Weekday::Mon => "Pondělí",
-        Weekday::Tue => "Úterý",
-        Weekday::Wed => "Středa",
-        Weekday::Thu => "Čtvrtek",
-        Weekday::Fri => "Pátek",
-        Weekday::Sat => "Sobota",
-        Weekday::Sun => "Neděle",
-    }
 }
