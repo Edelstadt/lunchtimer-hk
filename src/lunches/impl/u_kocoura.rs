@@ -39,7 +39,7 @@ fn kocour_denni_parser(menu: &mut Menu, body: String) -> Result<(), StoreError> 
             } else {
                 let mut am = line.find('\t')?;
 
-                let mut c = line.chars().rev().collect::<String>().find("\t")?;
+                let mut c = line.chars().rev().collect::<String>().find('\t')?;
 
                 c = line.chars().count() - c;
 

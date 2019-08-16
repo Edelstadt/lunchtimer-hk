@@ -72,18 +72,11 @@ fn format_row(row: String) -> Result<MenuBody, StoreError> {
     let re = Regex::new(r"(?ms)(?P<label>\D+)(?P<price>[-+]?\d+),-").unwrap();
 
     for cap in re.captures_iter(row.as_str()) {
-        match cap.name("label") {
-            Some(ok) => {
-                body.label = String::from(ok.as_str());
-            },
-            _ => {},
+        if let Some(ok) = cap.name("label") {
+            body.label = String::from(ok.as_str());
         }
-        match cap.name("price") {
-            Some(ok) => {
-                body.price = ok.as_str().parse().clone()?;
-            },
-
-            _ => {},
+        if let Some(ok) = cap.name("price") {
+            body.price = ok.as_str().parse().clone()?;
         }
     }
     Ok(body)

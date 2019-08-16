@@ -6,13 +6,13 @@ extern crate serde_derive;
 
 use std::collections::HashMap;
 
-use chrono::{Datelike, Utc, Weekday};
+use chrono::{Datelike, Utc};
 use nickel::{HttpRouter, Nickel};
 
 use crate::lunches::{
+    helpers::translate_weekday,
     menu::HtmlMenu,
     store::{get_menus, update_menus},
-    helpers::translate_weekday,
 };
 
 mod lunches;

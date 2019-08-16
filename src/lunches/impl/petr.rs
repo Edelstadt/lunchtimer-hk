@@ -1,13 +1,8 @@
-extern crate lopdf;
-extern crate pdf_extract;
+use std::sync::mpsc::Sender;
 
-use std::{
-    sync::mpsc::Sender,
-};
-
-use chrono::{Datelike, Utc, Weekday};
-use lopdf::*;
-use pdf_extract::*;
+use chrono::{Datelike, Utc};
+use lopdf::Document;
+use pdf_extract::{output_doc, PlainTextOutput};
 use regex::Regex;
 use reqwest::Client;
 
@@ -30,22 +25,23 @@ fn fetch_data() -> Result<Menu, StoreError> {
 
     output_doc(&pdf_doc, &mut PlainTextOutput::new(&mut out));
     let mut menu = Menu::new("Petr");
-    parser(&mut menu, out);
+    parser(&mut menu, out)?;
 
     Ok(menu)
 }
 
 fn parser(menu: &mut Menu, mut row: String) -> Result<(), StoreError> {
     let weekday = translate_weekday(Utc::now().weekday());
-    let beta_offset = row.find(weekday).unwrap_or(row.len());
+    let beta_offset = row.find(weekday).unwrap_or_else(|| row.len());
     row.drain(..beta_offset);
 
-    let re_for_body = Regex::new(r"(?ms)(?P<amount>\d{1,4}g)(?P<empty>\s+)(?P<label>\D+)(?P<price>\d{1,3},-)")?;
+    let re_for_body =
+        Regex::new(r"(?ms)(?P<amount>\d{1,4}g)(?P<empty>\s+)(?P<label>\D+)(?P<price>\d{1,3},-)")?;
     let re_for_soup = Regex::new(r"(?ms)(?P<amount>\D+:)(?P<label>\D+)(?P<price>\d{1,3}),-")?;
     let re_for_main = Regex::new(r"(?ms)(?P<amount>\d+g)-(?P<label>\D+)(?P<price>\d{1,3}),-")?;
 
-    let cleanupbody = re_for_body.replace_all(row.as_str(), "$amount-$label-$price");
-    for (i, line) in cleanupbody.lines().enumerate() {
+    let cleanup_body = re_for_body.replace_all(row.as_str(), "$amount-$label-$price");
+    for (i, line) in cleanup_body.lines().enumerate() {
         match i {
             0 => {
                 menu.body.push(MenuLine::Title(String::from("Polévka")));
@@ -63,7 +59,7 @@ fn parser(menu: &mut Menu, mut row: String) -> Result<(), StoreError> {
 
                 menu.body.push(MenuLine::Item(body));
                 menu.body.push(MenuLine::Title(String::from("Denní menu")));
-            }
+            },
             1 => (),
             _ => {
                 let first = line.chars().next();
@@ -87,7 +83,7 @@ fn parser(menu: &mut Menu, mut row: String) -> Result<(), StoreError> {
                         break;
                     }
                 }
-            }
+            },
         }
     }
     Ok(())
