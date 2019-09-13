@@ -46,7 +46,7 @@ fn parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
                 )?));
                 menu.body.push(MenuLine::Title(String::from("Denní menu")));
 
-                for _i in 0..5 {
+                for _i in 0..4 { // TODO iter do 5
                     offer = offer.next()?;
                     menu.body.push(MenuLine::Item(format_row(&offer.next()?)?));
                 }

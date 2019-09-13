@@ -1,3 +1,4 @@
+use std::io::Read;
 use std::sync::mpsc::Sender;
 
 use chrono::{Datelike, Utc};
@@ -16,11 +17,12 @@ pub(crate) async fn fetch(tx: Sender<Result<Menu, StoreError>>) {
 
 fn fetch_data() -> Result<Menu, StoreError> {
     let c = Client::new();
-    let _res = c
-        .get("https://www.pivovarberanek.cz/#jidelni-listek")
+    let mut res = c
+        .get("http://www.pivovarberanek.cz/")
         .send()?;
 
-    let body = String::new();
+    let mut body = String::new();
+    res.read_to_string(&mut body)?;
 
     let mut menu = Menu::new("Beránek");
     parser(&mut menu, body).expect("Beranek - parse error");

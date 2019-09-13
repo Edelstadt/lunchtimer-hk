@@ -44,7 +44,7 @@ async fn server() {
         },
     );
 
-    server.listen("127.0.0.1:8080").expect("Server fail");
+    server.listen("0.0.0.0:8080").expect("Server fail");
 }
 
 #[derive(Serialize)]
