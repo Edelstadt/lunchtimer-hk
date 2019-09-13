@@ -51,16 +51,18 @@ pub(crate) async fn update_menus() {
 
         let (tx, rx) = channel::<Result<Menu, StoreError>>();
 
-        let c = 6_usize; // Nelze přes Trait -> nepodporují async fn
+        let c = 1_usize; // Nelze přes Trait -> nepodporují async fn
                          // let f1 = (menus::fascila(tx.clone()));
-        let f2 = menus::u_kocoura(tx.clone());
-        let f3 = menus::beranek(tx.clone());
-        let f4 = menus::sova(tx.clone());
-        let f5 = menus::fascila(tx.clone());
-        let f6 = menus::naplavka(tx.clone());
-        let f7 = menus::petr(tx.clone());
+//        let f2 = menus::u_kocoura(tx.clone());
+//        let f3 = menus::beranek(tx.clone());
+//        let f4 = menus::sova(tx.clone());
+//        let f5 = menus::fascila(tx.clone());
+//        let f6 = menus::naplavka(tx.clone());
+//        let f7 = menus::petr(tx.clone());
+        let f0 = menus::menicka(tx.clone(), 1135_u16, String::from("Na Hradě"));
 
-        futures::join!(f2, f3, f4, f5, f6, f7);
+//        futures::join!(f2, f3, f4, f5, f6, f7);
+        futures::join!(f0);
 
         let mut data: Vec<HtmlMenu> = vec![];
         for i in 0..c {

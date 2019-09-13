@@ -5,6 +5,7 @@ pub(crate) use self::{
     petr::fetch as petr,
     sova::fetch as sova,
     u_kocoura::fetch as u_kocoura,
+    menicka::fetch as menicka,
 };
 
 mod beranek;
@@ -13,3 +14,4 @@ mod naplavka;
 mod petr;
 mod sova;
 mod u_kocoura;
+mod menicka;
