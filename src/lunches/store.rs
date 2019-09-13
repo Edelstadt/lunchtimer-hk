@@ -93,7 +93,8 @@ impl std::convert::From<reqwest::Error> for StoreError {
 }
 
 impl std::convert::From<std::io::Error> for StoreError {
-    fn from(_: std::io::Error) -> Self {
+    fn from(e: std::io::Error) -> Self {
+        dbg!(e);
         StoreError::Parse(String::from("Read data"))
     }
 }

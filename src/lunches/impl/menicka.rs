@@ -22,20 +22,17 @@ fn fetch_data(id: u16, name: String) -> Result<Menu, StoreError> {
     let c = Client::new();
     let mut res = c.get(&format!("https://menicka.cz/{}.html", id)).send()?;
 
-    dbg!(&res);
-    let mut body = String::new();
-    res.read_to_string(&mut body)?;
+    dbg!(1);
+    let document = Document::from_read(res)?;
     dbg!(2);
 
     let mut menu = Menu::new(&name);
-    parser(&mut menu, body)?;
+    parser(&mut menu, document)?;
 
     Ok(menu)
 }
 
-fn parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
-    let doc = Document::from_read(body.as_bytes())?;
-
+fn parser(menu: &mut Menu, doc: Document) -> Result<(), StoreError> {
     for node in doc.find(Class("menicka")) {
         dbg!(node);
 //        let now = Utc::now();
