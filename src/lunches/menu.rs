@@ -13,10 +13,9 @@ pub struct HtmlTitleLine {
 
 #[derive(Serialize)]
 pub struct HtmlBodyLine {
-    type_body:  bool,
-    pub amount: String,
-    pub label:  String,
-    pub price:  Option<usize>,
+    type_body: bool,
+    pub label: String,
+    pub price: String,
 }
 
 #[derive(Serialize)]
@@ -31,9 +30,8 @@ pub struct Menu {
 }
 
 pub struct MenuBody {
-    pub amount: String,
-    pub label:  String,
-    pub price:  usize,
+    pub label: String,
+    pub price: String,
 }
 
 pub enum MenuLine {
@@ -53,9 +51,8 @@ impl Menu {
 impl MenuBody {
     pub fn new() -> Self {
         MenuBody {
-            amount: String::new(),
-            label:  String::new(),
-            price:  0,
+            label: String::new(),
+            price: String::new(),
         }
     }
 }
@@ -89,12 +86,8 @@ impl From<Menu> for HtmlMenu {
                 MenuLine::Item(x) => {
                     html.body.push(HtmlBodyType::Line(HtmlBodyLine {
                         type_body: true,
-                        amount:    x.amount,
                         label:     x.label,
-                        price:     match x.price {
-                            0 => None,
-                            p => Some(p),
-                        },
+                        price:     x.price,
                     }));
                 },
             }
