@@ -17,7 +17,7 @@ pub(crate) async fn fetch(tx: Sender<Result<Menu, StoreError>>) {
 fn fetch_data() -> Result<Menu, StoreError> {
     let c = Client::new();
     let _res = c
-        .get("https://www.pivovarberanek.cz/#jidelni-listek")
+        .get("http://www.pivovarberanek.cz")
         .send()?;
 
     let body = String::new();

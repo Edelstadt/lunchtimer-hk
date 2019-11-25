@@ -46,9 +46,18 @@ fn parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
                 )?));
                 menu.body.push(MenuLine::Title(String::from("Denní menu")));
 
-                for _i in 0..5 {
-                    offer = offer.next()?;
-                    menu.body.push(MenuLine::Item(format_row(&offer.next()?)?));
+                for _i in 0..4 {
+                    let of = offer.next();
+                    match of {
+                        Some(x) => {
+                            offer = x;
+                            if let Some(_) = &x.attr("data_datum") {
+                                break;
+                            }
+                            menu.body.push(MenuLine::Item(format_row(&offer.next()?)?));
+                        }
+                        _ => break,
+                    }
                 }
             }
             Ok(())
@@ -63,7 +72,7 @@ fn format_row(row: &Node) -> Result<MenuBody, StoreError> {
         match i {
             0 => {
                 body.amount = ch.first_child()?.first_child()?.as_text()?.to_string();
-            },
+            }
             1 => {
                 body.label = ch
                     .first_child()? // TODO try text -> might get through children
@@ -71,7 +80,7 @@ fn format_row(row: &Node) -> Result<MenuBody, StoreError> {
                     .first_child()?
                     .as_text()?
                     .to_string();
-            },
+            }
             2 => {
                 body.price = ch
                     .first_child()?
@@ -81,7 +90,7 @@ fn format_row(row: &Node) -> Result<MenuBody, StoreError> {
                     .filter(|ch| ch.is_numeric()) // TODO char::is_numberic
                     .collect::<String>() // TODO &str
                     .parse::<usize>()?;
-            },
+            }
             _ => break,
         }
     }
