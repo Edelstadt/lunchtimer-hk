@@ -35,7 +35,8 @@ fn denni_parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
         return Err(StoreError::Parse(String::from("not a weekday")));
     }
 
-    for node in doc.find(Attr("id", "Table_1")) {
+    let name = format!("Table_{}", day);
+    for node in doc.find(Attr("id", name.as_str())) {
         menu.body.push(MenuLine::Title(String::from("Polévka")));
 
         let rows = node.find(Class("text_white"));
