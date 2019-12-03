@@ -40,7 +40,7 @@ fn denni_parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
         menu.body.push(MenuLine::Title(String::from("Polévka")));
 
         let rows = node.find(Class("text_white"));
-        for it in rows.skip(2).take(1) {
+        for it in rows.skip(1 + (day == 0) as usize).take(1) {
             menu.body.push(MenuLine::Item(MenuBody {
                 label:  it.first_child()?.as_text()?.to_string(),
                 price: String::new(),
@@ -50,7 +50,7 @@ fn denni_parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
         menu.body.push(MenuLine::Title(String::from("Jídla")));
 
         let rows = node.find(Class("text_white")); // TODO moved
-        for it in rows.skip(3) {
+        for it in rows.skip(2 + (day == 0) as usize) {
             menu.body.push(MenuLine::Item(MenuBody {
                 label:  it.first_child()?.as_text()?.to_string(),
                 price: it.last_child()?.as_text()?.to_string(),
