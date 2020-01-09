@@ -18,9 +18,9 @@
         </style>
     </head>
     <body>
-        <div class="container-xl p-0" style="height: 100vh;">
+        <div class="container-xl p-0" style="min-height: 100vh;">
             <div class="h-100">
-                <div id="carousel-food" class="carousel slide h-100" data-ride="carousel">
+                <div id="carousel-food" class="carousel slide h-100" data-ride="carousel" tabindex="-1">
                     <ol class="carousel-indicators">
                         {{#menus}}
                             <li data-target="#carousel-food" data-slide-to="{{@index}}" class="{{class}}"></li>
