@@ -37,7 +37,7 @@ fn denni_parser(menu: &mut Menu, body: String) -> Result<(), StoreError> {
 
     let name = format!("Table_{}", day);
     for node in doc.find(Attr("id", name.as_str())) {
-        menu.body.push(MenuLine::Title(String::from("Polévka")));
+        menu.body.push(MenuLine::Title(String::from("Polévky")));
 
         let rows = node.find(Class("text_white"));
         for it in rows.skip(1 + (day == 0) as usize).take(1) {

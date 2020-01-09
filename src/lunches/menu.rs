@@ -2,6 +2,7 @@
 pub struct HtmlMenu {
     id:        usize,
     pub title: String,
+    pub class: String,
     pub body:  Vec<HtmlBodyType>,
 }
 
@@ -63,6 +64,7 @@ impl HtmlMenu {
             id: 0,
             title,
             body: vec![],
+            class: String::new(),
         }
     }
 

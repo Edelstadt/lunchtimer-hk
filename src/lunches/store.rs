@@ -63,13 +63,19 @@ pub(crate) async fn update_menus() {
         menus::cerny_kun(tx.clone());
 
         let mut data: Vec<HtmlMenu> = vec![];
+        let mut activated = false; // TODO into template
         for i in 0..c {
             match rx.iter().next().expect("Data push to channel fail") {
                 Ok(x) => {
                     println!("{} - ok", &x.title);
                     let mut menu = HtmlMenu::from(x);
                     menu.set_id(i);
-                    data.push(menu)
+                    if !activated {
+                        dbg!("activated");
+                        menu.class = String::from("active");
+                        activated = true;
+                    }
+                    data.push(menu);
                 },
                 Err(e) => println!("{:?}", e), // TODO hláška která restauračka padla
             }
