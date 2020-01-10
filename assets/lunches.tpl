@@ -104,6 +104,7 @@
               interval: false
             })
           });
+          document.body.innerHTML = document.body.innerHTML.replace(/(<.*>)(.*houb.*|.*kulajda.*|.*krkonoš.*|.*žampion.*)(<.*>)/ig, '$1<span style="background: red;">$2</span>$3')
         </script>
     </body>
 </html>
