@@ -7,6 +7,22 @@ void main() => runApp(MaterialApp(
   themeMode: ThemeMode.dark,
   darkTheme: ThemeData(
     brightness: Brightness.dark,
+    textTheme: TextTheme(
+      bodyText1: TextStyle(
+        fontSize: 20.0,
+      ),
+      bodyText2: TextStyle(
+        fontSize: 20.0,
+      ),
+      headline1: TextStyle(
+        fontSize: 28.0,
+        fontWeight: FontWeight.w400,
+      ),
+      headline2: TextStyle(
+        fontSize: 26.0,
+        fontWeight: FontWeight.w400,
+      ),
+    ),
   ),
   home: DefaultTabController(
     initialIndex: 0,
@@ -47,7 +63,10 @@ class TabBtn extends StatelessWidget {
     return Container(
       height: 60,
       child: Center(
-        child: Text(this.text),
+        child: Text(
+            this.text,
+            style: Theme.of(context).textTheme.headline1,
+        ),
       ),
     );
   }
